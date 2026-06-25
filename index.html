@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Générateur de prompt — Personnalisation design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #F7F6F3;
+    --surface:  #FFFFFF;
+    --border:   #E2E0D8;
+    --border-s: #C8C5BA;
+    --text:     #18181B;
+    --muted:    #6B6B72;
+    --hint:     #A3A3AB;
+    --purple:   #7F77DD;
+    --purple-d: #534AB7;
+    --purple-l: #EEEDFE;
+    --mono:     'Courier New', monospace;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 3rem 1rem 5rem;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 580px;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 2.5rem;
+  }
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: .5rem;
+  }
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text);
+  }
+  .header p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: .4rem;
+    line-height: 1.6;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: .5rem;
+  }
+  .pdot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-s);
+    transition: all .25s;
+    flex-shrink: 0;
+  }
+  .pdot.done { background: var(--purple); }
+  .pdot.act  { background: var(--purple); box-shadow: 0 0 0 3px var(--purple-l); }
+  .pline { flex: 1; height: 1px; background: var(--border); }
+  .step-label {
+    font-size: 11px;
+    color: var(--hint);
+    text-align: right;
+    margin-bottom: 1.75rem;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+  }
+
+  /* Steps */
+  .step { display: none; }
+  .step.active { display: block; }
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: .25rem;
+  }
+  .step-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  /* Fields */
+  label.fl {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin: 1.1rem 0 6px;
+  }
+  input[type="text"], textarea {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color .15s;
+    line-height: 1.5;
+  }
+  input[type="text"]:focus, textarea:focus {
+    border-color: var(--purple);
+    background: #fff;
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  .fhint {
+    font-size: 11px;
+    color: var(--hint);
+    margin-top: 5px;
+    line-height: 1.5;
+  }
+
+  /* Chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .chip {
+    display: inline-block;
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border-s);
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+  }
+  .chip:hover:not(.sel) { border-color: var(--purple); color: var(--purple); background: var(--purple-l); }
+  .chip.sel { background: var(--purple-l); border-color: var(--purple); color: var(--purple-d); font-weight: 500; }
+
+  /* Nav buttons */
+  .gnav { display: flex; align-items: center; gap: 8px; margin-top: 1.75rem; }
+  .gbtn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--purple); color: #fff;
+    border: none; padding: 9px 20px;
+    border-radius: 8px; font-size: 13px;
+    font-family: 'Inter', sans-serif; font-weight: 500;
+    cursor: pointer; transition: background .15s;
+  }
+  .gbtn:hover { background: var(--purple-d); }
+  .gbtn.primary-dark { background: var(--purple-d); }
+  .gbtn.primary-dark:hover { background: #3C3489; }
+  .gback {
+    display: flex; align-items: center; gap: 5px;
+    background: none; border: 1px solid var(--border-s);
+    padding: 9px 14px; border-radius: 8px;
+    font-size: 12px; color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    cursor: pointer; transition: background .15s;
+  }
+  .gback:hover { background: var(--bg); }
+  .ml { margin-left: auto; }
+
+  /* Output */
+  .output-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .75rem;
+  }
+  .output-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .copy-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: none; border: 1px solid var(--border-s);
+    padding: 5px 12px; border-radius: 7px;
+    font-size: 12px; color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    cursor: pointer; transition: all .15s;
+  }
+  .copy-btn:hover { background: var(--bg); }
+  .copy-btn.copied { border-color: #22c55e; color: #16a34a; background: #f0fdf4; }
+
+  .prompt-block {
+    background: #0F1117;
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1.5rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    color: #D4D4D8;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #27272A;
+  }
+  .prompt-block .section-line { color: #6366F1; }
+  .prompt-block .key { color: #A78BFA; }
+  .prompt-block .value { color: #D4D4D8; }
+
+  /* Cursor blink */
+  .cursor {
+    display: inline-block;
+    width: 7px; height: 14px;
+    background: var(--purple);
+    vertical-align: middle;
+    animation: blink .8s step-end infinite;
+    border-radius: 1px;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* Success badge */
+  .success-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #f0fdf4; border: 1px solid #bbf7d0;
+    border-radius: 20px; padding: 3px 10px;
+    font-size: 11px; color: #16a34a; font-weight: 500;
+  }
+  .success-dot { width:6px;height:6px;border-radius:50%;background:#22c55e; }
+
+  svg.icon { width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="header-eyebrow">Outil de personnalisation</div>
+    <h1>Génère ton prompt design<br>sans l'IA par défaut</h1>
+    <p>4 questions, et tu obtiens un prompt prêt à coller dans Claude pour transformer le look de ton app.</p>
+  </div>
+
+  <div class="progress-wrap">
+    <div id="d1" class="pdot act"></div>
+    <div class="pline"></div>
+    <div id="d2" class="pdot"></div>
+    <div class="pline"></div>
+    <div id="d3" class="pdot"></div>
+    <div class="pline"></div>
+    <div id="d4" class="pdot"></div>
+    <div class="pline"></div>
+    <div id="d5" class="pdot"></div>
+  </div>
+  <div class="step-label" id="slabel">Étape 1 sur 4</div>
+
+  <div class="card">
+
+    <!-- Step 1 -->
+    <div id="step-1" class="step active">
+      <p class="step-title">Ton produit</p>
+      <p class="step-sub">Dis-moi ce que tu construis et à qui c'est destiné.</p>
+
+      <label class="fl">Nom de l'app</label>
+      <input type="text" id="f-name" placeholder="ex: FlowBoard, Nomad, Koa…" />
+
+      <label class="fl">Ce que ça fait en une phrase</label>
+      <textarea id="f-desc" style="min-height:60px" placeholder="ex: Un tableau de bord pour gérer les factures de freelances."></textarea>
+
+      <label class="fl">Audience cible</label>
+      <input type="text" id="f-aud" placeholder="ex: Freelances design, PME secteur médical…" />
+
+      <label class="fl">Impression que tu veux laisser</label>
+      <div class="chips">
+        <span class="chip" data-g="imp" onclick="tc(this)">Professionnel &amp; rassurant</span>
+        <span class="chip" data-g="imp" onclick="tc(this)">Créatif &amp; énergique</span>
+        <span class="chip" data-g="imp" onclick="tc(this)">Premium &amp; sobre</span>
+        <span class="chip" data-g="imp" onclick="tc(this)">Artisanal &amp; chaleureux</span>
+        <span class="chip" data-g="imp" onclick="tc(this)">Technique &amp; précis</span>
+        <span class="chip" data-g="imp" onclick="tc(this)">Ludique &amp; accessible</span>
+      </div>
+
+      <div class="gnav">
+        <button class="gbtn ml" onclick="go(2)">
+          Suivant
+          <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="step-2" class="step">
+      <p class="step-title">Le design actuel</p>
+      <p class="step-sub">Identifions précisément ce qui rend le style générique.</p>
+
+      <label class="fl">Le style ressemble à… (choix multiples)</label>
+      <div class="chips">
+        <span class="chip" data-g="sty" onclick="tm(this)">Fond crème + serif + terracotta</span>
+        <span class="chip" data-g="sty" onclick="tm(this)">Fond noir + accent vert ou rouge vif</span>
+        <span class="chip" data-g="sty" onclick="tm(this)">Mise en page journal + filets fins</span>
+        <span class="chip" data-g="sty" onclick="tm(this)">Bleu générique + boutons arrondis</span>
+        <span class="chip" data-g="sty" onclick="tm(this)">Autre style générique</span>
+      </div>
+
+      <label class="fl">Éléments à garder absolument</label>
+      <div class="chips">
+        <span class="chip" data-g="kp" onclick="tm(this)">Structure des pages</span>
+        <span class="chip" data-g="kp" onclick="tm(this)">Menu de navigation</span>
+        <span class="chip" data-g="kp" onclick="tm(this)">Responsive mobile</span>
+        <span class="chip" data-g="kp" onclick="tm(this)">Accessibilité</span>
+        <span class="chip" data-g="kp" onclick="tm(this)">Toutes les fonctionnalités</span>
+      </div>
+
+      <label class="fl">Autre chose à ne pas toucher ?</label>
+      <input type="text" id="f-ko" placeholder="ex: Le logo, la charte couleurs de la marque…" />
+
+      <div class="gnav">
+        <button class="gback" onclick="go(1)">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Retour
+        </button>
+        <button class="gbtn ml" onclick="go(3)">
+          Suivant
+          <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="step-3" class="step">
+      <p class="step-title">Inspirations</p>
+      <p class="step-sub">Plus c'est concret et ancré dans un univers réel, plus le design sera spécifique.</p>
+
+      <label class="fl">Sites ou marques qui t'inspirent et pourquoi</label>
+      <textarea id="f-ins" placeholder="ex: Linear.app pour sa densité et son noir profond. Stripe pour la typo précise. Notion pour la simplicité des icônes."></textarea>
+      <p class="fhint">Hors de ton secteur aussi — une affiche, un magazine, une marque.</p>
+
+      <label class="fl">Couleurs en tête (hex ou description)</label>
+      <input type="text" id="f-col" placeholder="ex: #1A1A2E + un doré chaud. Ou 'vert forêt et crème rosé'." />
+
+      <label class="fl">Éléments visuels à éviter absolument</label>
+      <textarea id="f-av" style="min-height:55px" placeholder="ex: Pas de dégradés, pas de glassmorphism, pas de polices rondes, pas de vert menthe…"></textarea>
+
+      <div class="gnav">
+        <button class="gback" onclick="go(2)">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Retour
+        </button>
+        <button class="gbtn ml" onclick="go(4)">
+          Suivant
+          <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div id="step-4" class="step">
+      <p class="step-title">Contenu &amp; niveau de refonte</p>
+      <p class="step-sub">Dernier step avant ton prompt.</p>
+
+      <label class="fl">Colle du vrai contenu de ton app</label>
+      <textarea id="f-cnt" style="min-height:100px" placeholder="ex: Titre principal : 'Gérez vos projets sans effort'. CTA : 'Commencer gratuitement'. Section hero : description courte de la valeur proposée…"></textarea>
+      <p class="fhint">Le vrai contenu évite que Claude invente des textes génériques.</p>
+
+      <label class="fl">Niveau de refonte souhaité</label>
+      <div class="chips">
+        <span class="chip" data-g="lvl" onclick="tc(this)">Touches légères (couleurs, typo)</span>
+        <span class="chip" data-g="lvl" onclick="tc(this)">Refonte complète du style</span>
+        <span class="chip" data-g="lvl" onclick="tc(this)">Tout refaire sauf la structure</span>
+      </div>
+
+      <div class="gnav">
+        <button class="gback" onclick="go(3)">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Retour
+        </button>
+        <button class="gbtn primary-dark ml" onclick="gen()">
+          <svg class="icon" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 3l1.9 5.8L19 10l-5.1 1.2L12 17l-1.9-5.8L5 10l5.1-1.2Z"/></svg>
+          Générer le prompt
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 5: Output -->
+    <div id="step-5" class="step">
+      <div class="output-header">
+        <div>
+          <div class="output-title">Ton prompt personnalisé</div>
+          <div style="margin-top:4px"><span class="success-badge"><span class="success-dot"></span>Prêt à coller dans Claude</span></div>
+        </div>
+        <button class="copy-btn" id="cpbtn" onclick="cp()">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copier
+        </button>
+      </div>
+      <div class="prompt-block" id="out"></div>
+      <div class="gnav" style="margin-top:1rem">
+        <button class="gback" onclick="go(4)">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Modifier
+        </button>
+        <button class="gback ml" onclick="rst()">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          Recommencer
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function sel(g){return[...document.querySelectorAll(`.chip.sel[data-g="${g}"]`)].map(c=>c.textContent.trim())}
+function tc(el){const g=el.dataset.g;document.querySelectorAll(`.chip[data-g="${g}"]`).forEach(c=>c.classList.remove('sel'));el.classList.add('sel')}
+function tm(el){el.classList.toggle('sel')}
+
+function go(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  for(let i=1;i<=5;i++){
+    const d=document.getElementById('d'+i);
+    d.classList.remove('act','done');
+    if(i<n) d.classList.add('done');
+    else if(i===n) d.classList.add('act');
+  }
+  document.getElementById('slabel').textContent = n<=4 ? `Étape ${n} sur 4` : 'Prompt généré ✓';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function rst(){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  document.querySelectorAll('input[type=text],textarea').forEach(e=>e.value='');
+  go(1);
+}
+
+function gen(){
+  const nm = document.getElementById('f-name').value.trim()||'[Nom de ton app]';
+  const ds = document.getElementById('f-desc').value.trim()||'[Description de l\'app]';
+  const au = document.getElementById('f-aud').value.trim()||'[Audience cible]';
+  const im = sel('imp').join(', ')||'[impression souhaitée]';
+  const st = sel('sty');
+  const kp = sel('kp');
+  const ko = document.getElementById('f-ko').value.trim();
+  const ins= document.getElementById('f-ins').value.trim()||'[références visuelles non précisées]';
+  const cl = document.getElementById('f-col').value.trim()||'aucune couleur précisée';
+  const av = document.getElementById('f-av').value.trim()||'aucun élément précisé';
+  const ct = document.getElementById('f-cnt').value.trim()||'(non fourni — invente un contenu cohérent avec le produit)';
+  const lv = sel('lvl')[0]||'Refonte complète du style';
+  const sd = st.length ? st.join(' / ') : 'un style générique difficile à définir';
+  const kd = [...kp,...(ko?[ko]:[])].join(', ')||'aucun élément critique identifié';
+
+  const prompt =
+`Je veux que tu retravailles le design visuel de mon application web.
+Le code fonctionne — concentre-toi uniquement sur l'identité visuelle.
+
+──────────────────────────────
+CONTEXTE DU PRODUIT
+──────────────────────────────
+Nom : ${nm}
+Ce que ça fait : ${ds}
+Audience cible : ${au}
+Impression souhaitée : ${im}
+
+──────────────────────────────
+LE PROBLÈME ACTUEL
+──────────────────────────────
+Style actuel : ${sd}
+C'est exactement le style générique des apps générées par IA.
+Je veux m'en éloigner clairement.
+
+──────────────────────────────
+RÉFÉRENCES & INSPIRATIONS
+──────────────────────────────
+Sites / marques inspirants (et pourquoi) :
+${ins}
+
+Couleurs en tête : ${cl}
+À éviter absolument : ${av}
+
+──────────────────────────────
+CONTRAINTES
+──────────────────────────────
+Éléments à ne pas toucher : ${kd}
+Niveau de refonte : ${lv}
+
+Contenu réel de l'app (utilise-le, ne l'invente pas) :
+${ct}
+
+──────────────────────────────
+CE QUE JE VEUX QUE TU FASSES
+──────────────────────────────
+1. Avant de coder, propose un plan de design :
+   → Palette : 4–6 couleurs nommées avec leurs codes hex
+   → Typographies : 2–3 polices avec leur rôle (display, body, ui)
+   → Élément signature : UN seul détail mémorable qui résume l'identité du produit
+
+2. Vérifie toi-même que ce plan n'est PAS générique.
+   Si tu reconnais un des 3 looks IA par défaut
+   (crème+serif+terracotta, noir+acide, journal+filets),
+   retravaille-le et explique ce que tu as changé.
+
+3. Une fois le plan validé par moi, applique-le de façon
+   cohérente sur l'ensemble de l'application.`;
+
+  go(5);
+  const out = document.getElementById('out');
+  out.textContent = '';
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  out.appendChild(cursor);
+
+  function tick(){
+    if(i < prompt.length){
+      out.insertBefore(document.createTextNode(prompt[i++]), cursor);
+      out.scrollTop = out.scrollHeight;
+      setTimeout(tick, 4);
+    } else {
+      cursor.remove();
+    }
+  }
+  tick();
+}
+
+function cp(){
+  const text = document.getElementById('out').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const b = document.getElementById('cpbtn');
+    b.classList.add('copied');
+    b.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Copié !`;
+    setTimeout(()=>{
+      b.classList.remove('copied');
+      b.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copier`;
+    }, 2500);
+  });
+}
+</script>
+</body>
+</html>
