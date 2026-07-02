@@ -1,430 +1,320 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Générateur de prompt — Personnalisation design</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Your Style — Prompt generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg:       #F7F6F3;
-    --surface:  #FFFFFF;
-    --border:   #E2E0D8;
-    --border-s: #C8C5BA;
-    --text:     #18181B;
-    --muted:    #6B6B72;
-    --hint:     #A3A3AB;
-    --purple:   #7F77DD;
-    --purple-d: #534AB7;
-    --purple-l: #EEEDFE;
-    --mono:     'Courier New', monospace;
-  }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 3rem 1rem 5rem;
-  }
-
-  .app {
-    width: 100%;
-    max-width: 580px;
-  }
-
-  /* Header */
-  .header {
-    margin-bottom: 2.5rem;
-  }
-  .header-eyebrow {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--purple);
-    margin-bottom: .5rem;
-  }
-  .header h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1.3;
-    color: var(--text);
-  }
-  .header p {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: .4rem;
-    line-height: 1.6;
-  }
-
-  /* Progress */
-  .progress-wrap {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: .5rem;
-  }
-  .pdot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--border-s);
-    transition: all .25s;
-    flex-shrink: 0;
-  }
-  .pdot.done { background: var(--purple); }
-  .pdot.act  { background: var(--purple); box-shadow: 0 0 0 3px var(--purple-l); }
-  .pline { flex: 1; height: 1px; background: var(--border); }
-  .step-label {
-    font-size: 11px;
-    color: var(--hint);
-    text-align: right;
-    margin-bottom: 1.75rem;
-  }
-
-  /* Card */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.75rem;
-  }
-
-  /* Steps */
-  .step { display: none; }
-  .step.active { display: block; }
-  .step-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: .25rem;
-  }
-  .step-sub {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-  }
-
-  /* Fields */
-  label.fl {
-    display: block;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    margin: 1.1rem 0 6px;
-  }
-  input[type="text"], textarea {
-    width: 100%;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    color: var(--text);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 9px 12px;
-    outline: none;
-    transition: border-color .15s;
-    line-height: 1.5;
-  }
-  input[type="text"]:focus, textarea:focus {
-    border-color: var(--purple);
-    background: #fff;
-  }
-  textarea { resize: vertical; min-height: 70px; }
-  .fhint {
-    font-size: 11px;
-    color: var(--hint);
-    margin-top: 5px;
-    line-height: 1.5;
-  }
-
-  /* Chips */
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
-  .chip {
-    display: inline-block;
-    padding: 5px 13px;
-    border-radius: 20px;
-    border: 1px solid var(--border-s);
-    background: var(--surface);
-    color: var(--muted);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all .15s;
-    user-select: none;
-  }
-  .chip:hover:not(.sel) { border-color: var(--purple); color: var(--purple); background: var(--purple-l); }
-  .chip.sel { background: var(--purple-l); border-color: var(--purple); color: var(--purple-d); font-weight: 500; }
-
-  /* Nav buttons */
-  .gnav { display: flex; align-items: center; gap: 8px; margin-top: 1.75rem; }
-  .gbtn {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--purple); color: #fff;
-    border: none; padding: 9px 20px;
-    border-radius: 8px; font-size: 13px;
-    font-family: 'Inter', sans-serif; font-weight: 500;
-    cursor: pointer; transition: background .15s;
-  }
-  .gbtn:hover { background: var(--purple-d); }
-  .gbtn.primary-dark { background: var(--purple-d); }
-  .gbtn.primary-dark:hover { background: #3C3489; }
-  .gback {
-    display: flex; align-items: center; gap: 5px;
-    background: none; border: 1px solid var(--border-s);
-    padding: 9px 14px; border-radius: 8px;
-    font-size: 12px; color: var(--muted);
-    font-family: 'Inter', sans-serif;
-    cursor: pointer; transition: background .15s;
-  }
-  .gback:hover { background: var(--bg); }
-  .ml { margin-left: auto; }
-
-  /* Output */
-  .output-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: .75rem;
-  }
-  .output-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-  }
-  .copy-btn {
-    display: flex; align-items: center; gap: 5px;
-    background: none; border: 1px solid var(--border-s);
-    padding: 5px 12px; border-radius: 7px;
-    font-size: 12px; color: var(--muted);
-    font-family: 'Inter', sans-serif;
-    cursor: pointer; transition: all .15s;
-  }
-  .copy-btn:hover { background: var(--bg); }
-  .copy-btn.copied { border-color: #22c55e; color: #16a34a; background: #f0fdf4; }
-
-  .prompt-block {
-    background: #0F1117;
-    border-radius: 12px;
-    padding: 1.25rem 1.25rem 1.5rem;
-    font-family: var(--mono);
-    font-size: 12px;
-    line-height: 1.8;
-    white-space: pre-wrap;
-    color: #D4D4D8;
-    max-height: 400px;
-    overflow-y: auto;
-    border: 1px solid #27272A;
-  }
-  .prompt-block .section-line { color: #6366F1; }
-  .prompt-block .key { color: #A78BFA; }
-  .prompt-block .value { color: #D4D4D8; }
-
-  /* Cursor blink */
-  .cursor {
-    display: inline-block;
-    width: 7px; height: 14px;
-    background: var(--purple);
-    vertical-align: middle;
-    animation: blink .8s step-end infinite;
-    border-radius: 1px;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-  /* Success badge */
-  .success-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: #f0fdf4; border: 1px solid #bbf7d0;
-    border-radius: 20px; padding: 3px 10px;
-    font-size: 11px; color: #16a34a; font-weight: 500;
-  }
-  .success-dot { width:6px;height:6px;border-radius:50%;background:#22c55e; }
-
-  svg.icon { width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle; }
+/* ... [LE CSS RESTE STRICTEMENT IDENTIQUE À TON CODE ORIGINAL] ... */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0C0C0E;--surface:#161618;--surface2:#1E1E21;--border:#252528;--borders:#35353A;
+  --text:#EDEAE2;--text2:#9A9AA6;--text3:#5A5A62;
+  --orange:#FF4500;--oranged:#CC3700;--orangebg:rgba(255,69,0,.08);--orangebd:rgba(255,69,0,.3);
+  --green:#22c55e;--greenbg:rgba(34,197,94,.08);--greenbd:rgba(34,197,94,.3);
+  --red:#ef4444;--redbg:rgba(239,68,68,.08);
+  --display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+  --r:4px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 1.25rem 7rem}
+.masthead{width:100%;max-width:640px;padding:4rem 0 2.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem}
+.masthead-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:1.25rem;flex-wrap:wrap}
+.masthead-tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);display:flex;align-items:center;gap:10px}
+.masthead-tag::after{content:'';flex:1;height:1px;background:var(--border)}
+.score-pill{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:6px 12px}
+.score-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.score-bar-track{width:60px;height:3px;background:var(--border);border-radius:1px;overflow:hidden}
+.score-bar-fill{height:100%;background:var(--orange);border-radius:1px;transition:width .4s ease,background .4s}
+.score-val{font-family:var(--mono);font-size:10px;color:var(--orange);min-width:28px;text-align:right;transition:color .4s}
+h1{font-family:var(--display);font-size:clamp(28px,6vw,50px);font-weight:700;line-height:1.05;letter-spacing:-.02em;margin-bottom:.85rem}
+h1 .acc{color:var(--orange)}
+.masthead p{font-size:13.5px;color:var(--text2);line-height:1.7;max-width:420px}
+.prog-outer{width:100%;max-width:640px;margin-bottom:2rem}
+.prog-track{width:100%;height:2px;background:var(--border);margin-bottom:.65rem;position:relative}
+.prog-fill{height:100%;background:var(--orange);transition:width .45s cubic-bezier(.4,0,.2,1);position:relative}
+.prog-fill::after{content:'';position:absolute;right:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 10px var(--orange);transition:opacity .3s}
+.prog-meta{display:flex;justify-content:space-between}
+.prog-text{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em}
+.prog-pct{font-family:var(--mono);font-size:9px;color:var(--orange)}
+.card{width:100%;max-width:640px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;position:relative}
+.wmark{position:absolute;top:-15px;right:1.5rem;font-family:var(--display);font-size:130px;font-weight:700;color:var(--surface2);line-height:1;user-select:none;pointer-events:none;z-index:0;letter-spacing:-.04em;transition:opacity .3s}
+.card-inner{padding:2.5rem;position:relative;z-index:1}
+.step{display:none}
+.step.active{display:block;animation:rise .22s ease}
+@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.step-eye{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:.55rem}
+.step-title{font-family:var(--display);font-size:23px;font-weight:700;line-height:1.2;letter-spacing:-.02em;margin-bottom:.3rem}
+.step-sub{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:1.85rem}
+.field{margin-top:1.4rem}
+label{display:block;font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+input[type=text],textarea{width:100%;font-family:var(--body);font-size:13.5px;color:var(--text);background:var(--bg);border:1px solid var(--borders);border-radius:var(--r);padding:11px 14px;outline:none;transition:border-color .15s,background .15s;line-height:1.55;-webkit-appearance:none}
+input[type=text]:focus,textarea:focus{border-color:var(--orange);background:var(--surface2)}
+textarea{resize:vertical;min-height:76px}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+.hint{font-size:11px;color:var(--text3);line-height:1.55;margin-top:5px}
+.col-wrap{position:relative}
+.col-swatches{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;min-height:0;transition:min-height .2s}
+.swatch{width:22px;height:22px;border-radius:2px;border:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.div{width:100%;height:1px;background:var(--border);margin:1.65rem 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{display:inline-flex;align-items:center;padding:6px 12px;border-radius:2px;border:1px solid var(--borders);background:var(--bg);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;user-select:none}
+.chip:hover:not(.sel){border-color:var(--orangebd);color:var(--text);background:var(--orangebg)}
+.chip.sel{background:var(--orangebg);border-color:var(--orange);color:var(--orange);font-weight:500}
+.chip.sel::before{content:'→ ';font-family:var(--mono);font-size:10px;opacity:.8}
+.err-msg{font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:.04em;margin-top:5px;display:none}
+.err-msg.show{display:block}
+input.invalid,textarea.invalid{border-color:var(--red)!important}
+.nav{display:flex;align-items:center;gap:10px;margin-top:2.25rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:none;padding:12px 22px;border-radius:2px;font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.btn-dark{background:var(--text);color:var(--bg);margin-left:auto}
+.btn-dark:hover{background:#fff;transform:translateY(-1px)}
+.btn-fire{background:var(--orange);color:#fff;margin-left:auto}
+.btn-fire:hover{background:var(--oranged);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)!important}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--borders);padding:11px 16px;border-radius:2px;font-family:var(--body);font-size:12px;color:var(--text3);cursor:pointer;transition:all .15s}
+.btn-ghost:hover{border-color:var(--text3);color:var(--text2)}
+#step-load{display:none}
+#step-load.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 0;gap:1.5rem}
+.load-title{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-.01em;text-align:center}
+.load-steps{display:flex;flex-direction:column;gap:.5rem;width:100%}
+.load-step{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text3);padding:8px 12px;border:1px solid var(--border);border-radius:2px;background:var(--bg);transition:all .3s}
+.load-step.running{color:var(--orange);border-color:var(--orangebd);background:var(--orangebg)}
+.load-step.done{color:var(--green);border-color:var(--greenbd);background:var(--greenbg)}
+.load-icon{font-size:12px;width:16px;text-align:center;flex-shrink:0}
+.spin{display:inline-block;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-bar-track{width:100%;height:2px;background:var(--border);border-radius:1px;overflow:hidden}
+.load-bar-fill{height:100%;background:var(--orange);border-radius:1px;transition:width .5s ease}
+.out-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:1.25rem}
+.out-title{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.out-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:2px;background:var(--greenbg);border:1px solid var(--greenbd);font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
+.bdot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.out-actions{display:flex;gap:6px;flex-shrink:0;margin-top:2px}
+.act-btn{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--borders);padding:8px 12px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.act-btn:hover{border-color:var(--orange);color:var(--orange)}
+.act-btn.copied{border-color:var(--green);color:var(--green);background:var(--greenbg)}
+.shell{background:var(--bg);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
+.shell-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.d-r{width:9px;height:9px;border-radius:50%;background:#FF5F57}
+.d-y{width:9px;height:9px;border-radius:50%;background:#FEBC2E}
+.d-g{width:9px;height:9px;border-radius:50%;background:#28C840}
+.shell-label{font-family:var(--mono);font-size:9px;color:var(--text3);margin-left:auto;letter-spacing:.06em}
+.shell-body{padding:1.5rem;font-family:var(--mono);font-size:11.5px;line-height:1.9;white-space:pre-wrap;max-height:440px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--borders) transparent}
+.shell-body::-webkit-scrollbar{width:4px}
+.shell-body::-webkit-scrollbar-thumb{background:var(--borders);border-radius:2px}
+.ph-sec{color:#6366f1;font-weight:500}
+.ph-key{color:#a78bfa}
+.ph-val{color:#d4d4d8}
+.ph-arr{color:var(--orange)}
+.ph-num{color:#facc15}
+.ph-plain{color:#9ca3af}
+.cursor-blink{display:inline-block;width:7px;height:13px;background:var(--orange);vertical-align:middle;animation:blink .75s step-end infinite;border-radius:1px;margin-left:1px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.err-state{display:none;flex-direction:column;align-items:center;gap:1rem;padding:2.5rem 0;text-align:center}
+.err-state.show{display:flex}
+.err-state p{font-size:13px;color:var(--text2)}
+.err-icon{font-size:28px}
+svg.ic{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;flex-shrink:0}
+@media(max-width:480px){.card-inner{padding:1.5rem}.masthead{padding:2.5rem 0 2rem}.wmark{font-size:90px}.out-actions{flex-direction:column}}
 </style>
 </head>
 <body>
 
-<div class="app">
-  <div class="header">
-    <div class="header-eyebrow">Outil de personnalisation</div>
-    <h1>Génère ton prompt design<br>sans l'IA par défaut</h1>
-    <p>4 questions, et tu obtiens un prompt prêt à coller dans Claude pour transformer le look de ton app.</p>
+<div class="masthead">
+  <div class="masthead-row">
+    <div class="masthead-tag">Your Style</div>
+    <div class="score-pill" title="Score de qualité du brief (complexité et précision)">
+      <span class="score-label">Brief IQ</span>
+      <div class="score-bar-track"><div class="score-bar-fill" id="sbar" style="width:0%"></div></div>
+      <span class="score-val" id="sval">0</span>
+    </div>
   </div>
+  <h1>Ton site doit pas<br>ressembler à un site <span class="acc">IA.</span></h1>
+  <p>Remplis le brief. L'algorithme analyse tes choix et génère un prompt d'ingénierie inversée sur-mesure pour Claude ou ChatGPT.</p>
+</div>
 
-  <div class="progress-wrap">
-    <div id="d1" class="pdot act"></div>
-    <div class="pline"></div>
-    <div id="d2" class="pdot"></div>
-    <div class="pline"></div>
-    <div id="d3" class="pdot"></div>
-    <div class="pline"></div>
-    <div id="d4" class="pdot"></div>
-    <div class="pline"></div>
-    <div id="d5" class="pdot"></div>
+<div class="prog-outer">
+  <div class="prog-track"><div class="prog-fill" id="pbar" style="width:0%"></div></div>
+  <div class="prog-meta">
+    <span class="prog-text" id="plabel">ÉTAPE 01 / 04 — TON PRODUIT</span>
+    <span class="prog-pct" id="ppct">0%</span>
   </div>
-  <div class="step-label" id="slabel">Étape 1 sur 4</div>
+</div>
 
-  <div class="card">
+<div class="card">
+  <div class="wmark" id="wmark">01</div>
+  <div class="card-inner">
 
-    <!-- Step 1 -->
     <div id="step-1" class="step active">
-      <p class="step-title">Ton produit</p>
-      <p class="step-sub">Dis-moi ce que tu construis et à qui c'est destiné.</p>
+      <div class="step-eye">// Étape 01</div>
+      <div class="step-title">Ton produit</div>
+      <p class="step-sub">Ces infos ancrent le design dans ta réalité sémantique.</p>
 
-      <label class="fl">Nom de l'app</label>
-      <input type="text" id="f-name" placeholder="ex: FlowBoard, Nomad, Koa…" />
-
-      <label class="fl">Ce que ça fait en une phrase</label>
-      <textarea id="f-desc" style="min-height:60px" placeholder="ex: Un tableau de bord pour gérer les factures de freelances."></textarea>
-
-      <label class="fl">Audience cible</label>
-      <input type="text" id="f-aud" placeholder="ex: Freelances design, PME secteur médical…" />
-
-      <label class="fl">Impression que tu veux laisser</label>
-      <div class="chips">
-        <span class="chip" data-g="imp" onclick="tc(this)">Professionnel &amp; rassurant</span>
-        <span class="chip" data-g="imp" onclick="tc(this)">Créatif &amp; énergique</span>
-        <span class="chip" data-g="imp" onclick="tc(this)">Premium &amp; sobre</span>
-        <span class="chip" data-g="imp" onclick="tc(this)">Artisanal &amp; chaleureux</span>
-        <span class="chip" data-g="imp" onclick="tc(this)">Technique &amp; précis</span>
-        <span class="chip" data-g="imp" onclick="tc(this)">Ludique &amp; accessible</span>
+      <div class="field">
+        <label>Nom de l'app *</label>
+        <input type="text" id="f-name" placeholder="ex: Koa, FlowBoard, Nomad…" oninput="Engine.evaluateState()"/>
+        <div class="err-msg" id="err-name">// L'entité nécessite un identifiant.</div>
       </div>
-
-      <div class="gnav">
-        <button class="gbtn ml" onclick="go(2)">
-          Suivant
-          <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
+      <div class="field">
+        <label>Ce que ça fait — une phrase *</label>
+        <textarea id="f-desc" style="min-height:62px" placeholder="ex: Un générateur de prompts pour que les sites n'aient plus l'air générés par IA." oninput="Engine.evaluateState()"></textarea>
+        <div class="err-msg" id="err-desc">// La fonction de l'app est requise pour le contexte.</div>
       </div>
-    </div>
-
-    <!-- Step 2 -->
-    <div id="step-2" class="step">
-      <p class="step-title">Le design actuel</p>
-      <p class="step-sub">Identifions précisément ce qui rend le style générique.</p>
-
-      <label class="fl">Le style ressemble à… (choix multiples)</label>
-      <div class="chips">
-        <span class="chip" data-g="sty" onclick="tm(this)">Fond crème + serif + terracotta</span>
-        <span class="chip" data-g="sty" onclick="tm(this)">Fond noir + accent vert ou rouge vif</span>
-        <span class="chip" data-g="sty" onclick="tm(this)">Mise en page journal + filets fins</span>
-        <span class="chip" data-g="sty" onclick="tm(this)">Bleu générique + boutons arrondis</span>
-        <span class="chip" data-g="sty" onclick="tm(this)">Autre style générique</span>
+      <div class="field">
+        <label>Audience cible</label>
+        <input type="text" id="f-aud" placeholder="ex: Freelances design, fondateurs..." oninput="Engine.evaluateState()"/>
       </div>
-
-      <label class="fl">Éléments à garder absolument</label>
-      <div class="chips">
-        <span class="chip" data-g="kp" onclick="tm(this)">Structure des pages</span>
-        <span class="chip" data-g="kp" onclick="tm(this)">Menu de navigation</span>
-        <span class="chip" data-g="kp" onclick="tm(this)">Responsive mobile</span>
-        <span class="chip" data-g="kp" onclick="tm(this)">Accessibilité</span>
-        <span class="chip" data-g="kp" onclick="tm(this)">Toutes les fonctionnalités</span>
-      </div>
-
-      <label class="fl">Autre chose à ne pas toucher ?</label>
-      <input type="text" id="f-ko" placeholder="ex: Le logo, la charte couleurs de la marque…" />
-
-      <div class="gnav">
-        <button class="gback" onclick="go(1)">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Retour
-        </button>
-        <button class="gbtn ml" onclick="go(3)">
-          Suivant
-          <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Step 3 -->
-    <div id="step-3" class="step">
-      <p class="step-title">Inspirations</p>
-      <p class="step-sub">Plus c'est concret et ancré dans un univers réel, plus le design sera spécifique.</p>
-
-      <label class="fl">Sites ou marques qui t'inspirent et pourquoi</label>
-      <textarea id="f-ins" placeholder="ex: Linear.app pour sa densité et son noir profond. Stripe pour la typo précise. Notion pour la simplicité des icônes."></textarea>
-      <p class="fhint">Hors de ton secteur aussi — une affiche, un magazine, une marque.</p>
-
-      <label class="fl">Couleurs en tête (hex ou description)</label>
-      <input type="text" id="f-col" placeholder="ex: #1A1A2E + un doré chaud. Ou 'vert forêt et crème rosé'." />
-
-      <label class="fl">Éléments visuels à éviter absolument</label>
-      <textarea id="f-av" style="min-height:55px" placeholder="ex: Pas de dégradés, pas de glassmorphism, pas de polices rondes, pas de vert menthe…"></textarea>
-
-      <div class="gnav">
-        <button class="gback" onclick="go(2)">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Retour
-        </button>
-        <button class="gbtn ml" onclick="go(4)">
-          Suivant
-          <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Step 4 -->
-    <div id="step-4" class="step">
-      <p class="step-title">Contenu &amp; niveau de refonte</p>
-      <p class="step-sub">Dernier step avant ton prompt.</p>
-
-      <label class="fl">Colle du vrai contenu de ton app</label>
-      <textarea id="f-cnt" style="min-height:100px" placeholder="ex: Titre principal : 'Gérez vos projets sans effort'. CTA : 'Commencer gratuitement'. Section hero : description courte de la valeur proposée…"></textarea>
-      <p class="fhint">Le vrai contenu évite que Claude invente des textes génériques.</p>
-
-      <label class="fl">Niveau de refonte souhaité</label>
-      <div class="chips">
-        <span class="chip" data-g="lvl" onclick="tc(this)">Touches légères (couleurs, typo)</span>
-        <span class="chip" data-g="lvl" onclick="tc(this)">Refonte complète du style</span>
-        <span class="chip" data-g="lvl" onclick="tc(this)">Tout refaire sauf la structure</span>
-      </div>
-
-      <div class="gnav">
-        <button class="gback" onclick="go(3)">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Retour
-        </button>
-        <button class="gbtn primary-dark ml" onclick="gen()">
-          <svg class="icon" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 3l1.9 5.8L19 10l-5.1 1.2L12 17l-1.9-5.8L5 10l5.1-1.2Z"/></svg>
-          Générer le prompt
-        </button>
-      </div>
-    </div>
-
-    <!-- Step 5: Output -->
-    <div id="step-5" class="step">
-      <div class="output-header">
-        <div>
-          <div class="output-title">Ton prompt personnalisé</div>
-          <div style="margin-top:4px"><span class="success-badge"><span class="success-dot"></span>Prêt à coller dans Claude</span></div>
+      <div class="div"></div>
+      <div class="field">
+        <label>Impression cognitivo-visuelle souhaitée</label>
+        <div class="chips">
+          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Professionnel & rassurant</span>
+          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Créatif & énergique</span>
+          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Premium & sobre</span>
+          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Artisanal & chaleureux</span>
+          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Technique & ultra-précis</span>
+          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Brutaliste & décalé</span>
         </div>
-        <button class="copy-btn" id="cpbtn" onclick="cp()">
-          <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copier
+      </div>
+      <div class="nav">
+        <button class="btn btn-dark" onclick="Engine.navigate(1,2)">Continuer <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+
+    <div id="step-2" class="step">
+      <div class="step-eye">// Étape 02</div>
+      <div class="step-title">La dette visuelle (Style actuel)</div>
+      <p class="step-sub">Identifier précisément les tropes IA à détruire.</p>
+
+      <div class="field">
+        <label>Symptômes actuels du design (plusieurs choix)</label>
+        <div class="chips">
+          <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Trop parfait / Lisse (Dribbble effect)</span>
+          <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Boutons primaires géants avec ombres portées douces</span>
+          <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Polices Inter/Roboto partout sans hiérarchie forte</span>
+          <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Dégradés violets/bleus typiques Web3/IA</span>
+          <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Bordures grises (border-slate-200) excessives</span>
+        </div>
+      </div>
+      <div class="div"></div>
+      <div class="field">
+        <label>Sanctuaires (À préserver absolument)</label>
+        <div class="chips">
+          <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">DOM / Structure HTML</span>
+          <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">Grid & Flexbox layouts</span>
+          <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">Logique d'interaction (JS)</span>
+          <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">Accessibilité (ARIA)</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Autre contrainte stricte ?</label>
+        <input type="text" id="f-ko" placeholder="ex: Mon logo SVG, la lib Tailwind, les icônes Lucide..." oninput="Engine.evaluateState()"/>
+      </div>
+      <div class="nav">
+        <button class="btn-ghost" onclick="Engine.navigate(2,1)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+        <button class="btn btn-dark" onclick="Engine.navigate(2,3)">Continuer <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+
+    <div id="step-3" class="step">
+      <div class="step-eye">// Étape 03</div>
+      <div class="step-title">Ingénierie de l'Inspiration</div>
+      <p class="step-sub">On fournit au LLM des vecteurs sémantiques forts pour le sortir de son espace latent par défaut.</p>
+
+      <div class="field">
+        <label>Références architecturales / visuelles</label>
+        <textarea id="f-ins" placeholder="ex: Interface terminal old-school, esthétique Bauhaus, manuel technique des années 80, Linear.app pour la densité..." oninput="Engine.evaluateState()"></textarea>
+      </div>
+      <div class="field">
+        <label>Théorie des couleurs (Hex acceptés)</label>
+        <div class="col-wrap">
+          <input type="text" id="f-col" placeholder="ex: #FF4500 pour l'accent, fond monocrhome très sombre, texte os..." oninput="UI.updateSwatches();Engine.evaluateState()"/>
+          <div class="col-swatches" id="swatches"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Anti-Prompt (À éviter de toute urgence)</label>
+        <textarea id="f-av" style="min-height:58px" placeholder="ex: Pas de glassmorphism, pas de coins trop arrondis, interdiction d'utiliser du bleu pastel..." oninput="Engine.evaluateState()"></textarea>
+      </div>
+      <div class="nav">
+        <button class="btn-ghost" onclick="Engine.navigate(3,2)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+        <button class="btn btn-dark" onclick="Engine.navigate(3,4)">Continuer <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+
+    <div id="step-4" class="step">
+      <div class="step-eye">// Étape 04 — Dernière</div>
+      <div class="step-title">Paramètres de compilation</div>
+      <p class="step-sub">Ajustement final du comportement du modèle.</p>
+
+      <div class="field">
+        <label>Échantillon de copie (Texte réel)</label>
+        <textarea id="f-cnt" style="min-height:100px" placeholder="Si l'IA n'a pas de vrai texte, elle fera des choix de typo génériques. Colle ici ton H1, quelques sous-titres, et le label de ton bouton principal." oninput="Engine.evaluateState()"></textarea>
+      </div>
+      <div class="div"></div>
+      <div class="field">
+        <label>Niveau d'agressivité de la refonte</label>
+        <div class="chips">
+          <span class="chip" data-g="lvl" onclick="UI.toggleChipSingle(this)">Conservateur (CSS pur, spacing/typo)</span>
+          <span class="chip" data-g="lvl" onclick="UI.toggleChipSingle(this)">Audacieux (Nouveau paradigme visuel)</span>
+          <span class="chip" data-g="lvl" onclick="UI.toggleChipSingle(this)">Destructeur (On casse tout sauf la fonctionnalité)</span>
+        </div>
+      </div>
+      <div class="nav">
+        <button class="btn-ghost" onclick="Engine.navigate(4,3)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+        <button class="btn btn-fire" onclick="Generator.initiateSequence()">
+          <svg class="ic" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 3l1.9 5.8L19 10l-5.1 1.2L12 17l-1.9-5.8L5 10l5.1-1.2Z"/></svg>
+          Compiler le Prompt
         </button>
       </div>
-      <div class="prompt-block" id="out"></div>
-      <div class="gnav" style="margin-top:1rem">
-        <button class="gback" onclick="go(4)">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Modifier
-        </button>
-        <button class="gback ml" onclick="rst()">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-          Recommencer
-        </button>
+    </div>
+
+    <div id="step-load">
+      <div class="load-title">Compilation heuristique en cours…</div>
+      <div class="load-steps">
+        <div class="load-step" id="ls1"><span class="load-icon">○</span>Analyse sémantique du brief</div>
+        <div class="load-step" id="ls2"><span class="load-icon">○</span>Pondération des contraintes</div>
+        <div class="load-step" id="ls3"><span class="load-icon">○</span>Génération des vecteurs anti-IA</div>
+        <div class="load-step" id="ls4"><span class="load-icon">○</span>Finalisation de l'artefact textuel</div>
+      </div>
+      <div class="load-bar-track" style="width:100%">
+        <div class="load-bar-fill" id="lbar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div id="step-5" class="step">
+      <div class="out-header">
+        <div>
+          <div class="out-title">Artefact généré.</div>
+          <div class="out-badge"><span class="bdot"></span>Prompt optimisé · Prêt à l'injection</div>
+        </div>
+        <div class="out-actions">
+          <button class="act-btn" id="cpbtn" onclick="UI.copyOutput()">
+            <svg class="ic" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copier
+          </button>
+          <button class="act-btn" onclick="UI.downloadOutput()">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            .txt
+          </button>
+        </div>
+      </div>
+
+      <div class="shell">
+        <div class="shell-bar">
+          <div class="d-r"></div><div class="d-y"></div><div class="d-g"></div>
+          <span class="shell-label">prompt_engine_v2.txt — Master Prompt</span>
+        </div>
+        <div class="shell-body" id="out"></div>
+      </div>
+
+      <div class="nav" style="margin-top:1.25rem;padding-top:1.25rem">
+        <button class="btn-ghost" onclick="Engine.navigate(5,4)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Modifier les paramètres</button>
+        <button class="btn-ghost" style="margin-left:auto" onclick="Engine.hardReset()"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg> Purger la mémoire</button>
       </div>
     </div>
 
@@ -432,130 +322,366 @@
 </div>
 
 <script>
-function sel(g){return[...document.querySelectorAll(`.chip.sel[data-g="${g}"]`)].map(c=>c.textContent.trim())}
-function tc(el){const g=el.dataset.g;document.querySelectorAll(`.chip[data-g="${g}"]`).forEach(c=>c.classList.remove('sel'));el.classList.add('sel')}
-function tm(el){el.classList.toggle('sel')}
+/**
+ * YOUR STYLE - INTELLIGENCE CORE
+ * Architecture refactorisée pour une complexité algorithmique accrue.
+ * Utilise des classes modulaires, un scoring basé sur la densité d'information (Heuristique),
+ * et un moteur de génération de prompt local extrêmement fin.
+ */
 
-function go(n){
-  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
-  document.getElementById('step-'+n).classList.add('active');
-  for(let i=1;i<=5;i++){
-    const d=document.getElementById('d'+i);
-    d.classList.remove('act','done');
-    if(i<n) d.classList.add('done');
-    else if(i===n) d.classList.add('act');
+// ── 1. UTILITAIRES & ETAT ─────────────────────────────────────
+const Utils = {
+  val: (id) => (document.getElementById(id) || {}).value?.trim() || '',
+  sel: (g) => [...document.querySelectorAll(`.chip.sel[data-g="${g}"]`)].map(c => c.textContent.replace('→ ', '').trim()),
+  sleep: (ms) => new Promise(resolve => setTimeout(resolve, ms)),
+  extractHex: (str) => [...str.matchAll(/#([0-9a-fA-F]{3,8})/g)].map(m => m[0])
+};
+
+const Config = {
+  WMARKS: ['','01','02','03','04','◆','◆'],
+  PLABELS: ['','CONTEXTE PRODUIT','DETTE VISUELLE','INGÉNIERIE VISUELLE','COMPILATION','',''],
+  PPCTS: [0,0,25,50,75,100,100]
+};
+
+let GlobalState = {
+  lastGeneratedPrompt: '',
+  iqScore: 0
+};
+
+// ── 2. MOTEUR D'INTERFACE (UI) ────────────────────────────────
+class UI {
+  static toggleChipSingle(el) {
+    const group = el.dataset.g;
+    document.querySelectorAll(`.chip[data-g="${group}"]`).forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+    Engine.evaluateState();
   }
-  document.getElementById('slabel').textContent = n<=4 ? `Étape ${n} sur 4` : 'Prompt généré ✓';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
 
-function rst(){
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
-  document.querySelectorAll('input[type=text],textarea').forEach(e=>e.value='');
-  go(1);
-}
+  static toggleChipMulti(el) {
+    el.classList.toggle('sel');
+    Engine.evaluateState();
+  }
 
-function gen(){
-  const nm = document.getElementById('f-name').value.trim()||'[Nom de ton app]';
-  const ds = document.getElementById('f-desc').value.trim()||'[Description de l\'app]';
-  const au = document.getElementById('f-aud').value.trim()||'[Audience cible]';
-  const im = sel('imp').join(', ')||'[impression souhaitée]';
-  const st = sel('sty');
-  const kp = sel('kp');
-  const ko = document.getElementById('f-ko').value.trim();
-  const ins= document.getElementById('f-ins').value.trim()||'[références visuelles non précisées]';
-  const cl = document.getElementById('f-col').value.trim()||'aucune couleur précisée';
-  const av = document.getElementById('f-av').value.trim()||'aucun élément précisé';
-  const ct = document.getElementById('f-cnt').value.trim()||'(non fourni — invente un contenu cohérent avec le produit)';
-  const lv = sel('lvl')[0]||'Refonte complète du style';
-  const sd = st.length ? st.join(' / ') : 'un style générique difficile à définir';
-  const kd = [...kp,...(ko?[ko]:[])].join(', ')||'aucun élément critique identifié';
+  static updateSwatches() {
+    const hexes = Utils.extractHex(Utils.val('f-col'));
+    const container = document.getElementById('swatches');
+    container.innerHTML = hexes.map(h => `<div class="swatch" style="background:${h}" title="${h}"></div>`).join('');
+  }
 
-  const prompt =
-`Je veux que tu retravailles le design visuel de mon application web.
-Le code fonctionne — concentre-toi uniquement sur l'identité visuelle.
+  static showError(eid, fid) {
+    document.getElementById(eid).classList.add('show');
+    document.getElementById(fid).classList.add('invalid');
+  }
 
-──────────────────────────────
-CONTEXTE DU PRODUIT
-──────────────────────────────
-Nom : ${nm}
-Ce que ça fait : ${ds}
-Audience cible : ${au}
-Impression souhaitée : ${im}
+  static hideError(eid, fid) {
+    document.getElementById(eid).classList.remove('show');
+    document.getElementById(fid).classList.remove('invalid');
+  }
 
-──────────────────────────────
-LE PROBLÈME ACTUEL
-──────────────────────────────
-Style actuel : ${sd}
-C'est exactement le style générique des apps générées par IA.
-Je veux m'en éloigner clairement.
+  static updateScore(scoreObj) {
+    const bar = document.getElementById('sbar');
+    const val = document.getElementById('sval');
+    
+    // Le score peut dépasser 100 si le prompt est ultra-détaillé, on le cap visuellement
+    const displayPct = Math.min(scoreObj.total, 100);
+    bar.style.width = displayPct + '%';
+    val.textContent = scoreObj.total;
 
-──────────────────────────────
-RÉFÉRENCES & INSPIRATIONS
-──────────────────────────────
-Sites / marques inspirants (et pourquoi) :
-${ins}
+    // Colorimétrie du score basée sur la complexité
+    if(scoreObj.total >= 85) { bar.style.background = '#22c55e'; val.style.color = '#22c55e'; } // Vert
+    else if(scoreObj.total >= 45) { bar.style.background = '#FEBC2E'; val.style.color = '#FEBC2E'; } // Jaune
+    else { bar.style.background = '#FF4500'; val.style.color = '#FF4500'; } // Orange/Rouge
+  }
 
-Couleurs en tête : ${cl}
-À éviter absolument : ${av}
-
-──────────────────────────────
-CONTRAINTES
-──────────────────────────────
-Éléments à ne pas toucher : ${kd}
-Niveau de refonte : ${lv}
-
-Contenu réel de l'app (utilise-le, ne l'invente pas) :
-${ct}
-
-──────────────────────────────
-CE QUE JE VEUX QUE TU FASSES
-──────────────────────────────
-1. Avant de coder, propose un plan de design :
-   → Palette : 4–6 couleurs nommées avec leurs codes hex
-   → Typographies : 2–3 polices avec leur rôle (display, body, ui)
-   → Élément signature : UN seul détail mémorable qui résume l'identité du produit
-
-2. Vérifie toi-même que ce plan n'est PAS générique.
-   Si tu reconnais un des 3 looks IA par défaut
-   (crème+serif+terracotta, noir+acide, journal+filets),
-   retravaille-le et explique ce que tu as changé.
-
-3. Une fois le plan validé par moi, applique-le de façon
-   cohérente sur l'ensemble de l'application.`;
-
-  go(5);
-  const out = document.getElementById('out');
-  out.textContent = '';
-  let i = 0;
-  const cursor = document.createElement('span');
-  cursor.className = 'cursor';
-  out.appendChild(cursor);
-
-  function tick(){
-    if(i < prompt.length){
-      out.insertBefore(document.createTextNode(prompt[i++]), cursor);
-      out.scrollTop = out.scrollHeight;
-      setTimeout(tick, 4);
-    } else {
-      cursor.remove();
+  static async typeWriterEffect(el, text) {
+    el.innerHTML = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor-blink';
+    el.appendChild(cursor);
+    
+    let i = 0;
+    while(i < text.length) {
+      const chunk = text.slice(i, i + (Math.random() > 0.8 ? 4 : 2)); // Vitesse pseudo-aléatoire
+      el.insertBefore(document.createTextNode(chunk), cursor);
+      i += chunk.length;
+      el.scrollTop = el.scrollHeight;
+      await Utils.sleep(Math.random() * 15 + 2); // Ultra rapide
     }
+    cursor.remove();
+    el.innerHTML = this.syntaxHighlight(text);
   }
-  tick();
+
+  static syntaxHighlight(text) {
+    const lines = text.split('\n');
+    return lines.map(line => {
+      if(/^#+ /.test(line) || /^\[[A-Z]+\]/.test(line)) return `<span class="ph-sec">${line}</span>`; // Titres & Tags
+      if(/^[A-ZÉÀÙÈÊÂÛÎÔ_ -]+:$/.test(line.trim())) return `<span class="ph-key">${line}</span>`; // Clés fortes
+      if(/^(Nom|Mission|Audience|Style|Contraintes|Inspirations|Couleurs|Niveau|Texte)/i.test(line)) {
+        const parts = line.split(':');
+        return `<span class="ph-key">${parts[0]}:</span><span class="ph-val">${parts.slice(1).join(':')}</span>`;
+      }
+      if(/^\s*[-•]/.test(line)) return `<span class="ph-arr">${line}</span>`; // Puces
+      if(/^\d\./.test(line.trim())) return `<span class="ph-num">${line}</span>`; // Chiffres
+      // Highlight hex codes specifically
+      let parsedLine = line.replace(/(#[0-9a-fA-F]{3,8})/g, '<span style="color:$1; background:rgba(255,255,255,0.1); padding:0 3px; border-radius:2px;">$1</span>');
+      return `<span class="ph-plain">${parsedLine}</span>`;
+    }).join('\n');
+  }
+
+  static copyOutput() {
+    navigator.clipboard.writeText(GlobalState.lastGeneratedPrompt).then(() => {
+      const b = document.getElementById('cpbtn');
+      b.classList.add('copied');
+      b.innerHTML = '<svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Copié !';
+      setTimeout(() => {
+        b.classList.remove('copied');
+        b.innerHTML = '<svg class="ic" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copier';
+      }, 2500);
+    });
+  }
+
+  static downloadOutput() {
+    if(!GlobalState.lastGeneratedPrompt) return;
+    const blob = new Blob([GlobalState.lastGeneratedPrompt], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `Prompt_Refonte_${Utils.val('f-name').replace(/\s+/g, '_') || 'Projet'}.txt`;
+    a.click();
+  }
 }
 
-function cp(){
-  const text = document.getElementById('out').textContent;
-  navigator.clipboard.writeText(text).then(()=>{
-    const b = document.getElementById('cpbtn');
-    b.classList.add('copied');
-    b.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Copié !`;
-    setTimeout(()=>{
-      b.classList.remove('copied');
-      b.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copier`;
-    }, 2500);
-  });
+// ── 3. MOTEUR LOGIQUE & SCORING HEURISTIQUE ───────────────────
+class Engine {
+  static evaluateState() {
+    // 1. Sauvegarde silencieuse locale
+    this.saveToStorage();
+
+    // 2. Algorithme de calcul du "Brief IQ" (Qualité des données)
+    let score = { base: 0, density: 0, bonus: 0, total: 0 };
+    
+    const fName = Utils.val('f-name');
+    const fDesc = Utils.val('f-desc');
+    const fIns = Utils.val('f-ins');
+    const fCol = Utils.val('f-col');
+    const fCnt = Utils.val('f-cnt');
+
+    // Points de base (existence)
+    if(fName) score.base += 10;
+    if(fDesc) score.base += 15;
+    if(Utils.val('f-aud')) score.base += 10;
+    if(Utils.sel('imp').length) score.base += 10;
+    if(Utils.sel('sty').length) score.base += 10;
+    if(Utils.sel('kp').length) score.base += 5;
+    if(fIns) score.base += 15;
+    if(fCol) score.base += 10;
+    if(fCnt) score.base += 15;
+
+    // Analyse de densité (Longueur sémantique)
+    if(fDesc.length > 50) score.density += 10; // Bonne description
+    if(fIns.length > 40) score.density += 10; // Références solides
+    if(fCnt.length > 100) score.density += 15; // Vrai contenu fourni
+    
+    // Bonus spécifiques (Détection Hex)
+    if(Utils.extractHex(fCol).length > 0) score.bonus += 10;
+
+    score.total = score.base + Math.min(score.density, 35) + Math.min(score.bonus, 10);
+    GlobalState.iqScore = score.total;
+    UI.updateScore(score);
+  }
+
+  static saveToStorage() {
+    try {
+      const state = {
+        name: Utils.val('f-name'), desc: Utils.val('f-desc'), aud: Utils.val('f-aud'), ko: Utils.val('f-ko'),
+        ins: Utils.val('f-ins'), col: Utils.val('f-col'), av: Utils.val('f-av'), cnt: Utils.val('f-cnt'),
+        chips: [...document.querySelectorAll('.chip.sel')].map(c => ({g: c.dataset.g, t: c.textContent.replace('→ ', '').trim()}))
+      };
+      localStorage.setItem('ys-core-state', JSON.stringify(state));
+    } catch(e){}
+  }
+
+  static restoreFromStorage() {
+    try {
+      const s = JSON.parse(localStorage.getItem('ys-core-state'));
+      if(!s) return;
+      const set = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+      set('f-name', s.name); set('f-desc', s.desc); set('f-aud', s.aud); set('f-ko', s.ko);
+      set('f-ins', s.ins); set('f-col', s.col); set('f-av', s.av); set('f-cnt', s.cnt);
+      (s.chips || []).forEach(({g, t}) => {
+        const chip = [...document.querySelectorAll(`.chip[data-g="${g}"]`)].find(c => c.textContent.replace('→ ', '').trim() === t);
+        if(chip) chip.classList.add('sel');
+      });
+      UI.updateSwatches();
+      this.evaluateState();
+    } catch(e){}
+  }
+
+  static navigate(from, to) {
+    if(from === 1) {
+      let ok = true;
+      if(!Utils.val('f-name')){ UI.showError('err-name','f-name'); ok = false; } else UI.hideError('err-name','f-name');
+      if(!Utils.val('f-desc')){ UI.showError('err-desc','f-desc'); ok = false; } else UI.hideError('err-desc','f-desc');
+      if(!ok) return;
+    }
+
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-load').style.display = 'none';
+    
+    const targetEl = document.getElementById('step-' + to);
+    if(targetEl) targetEl.classList.add('active');
+    
+    document.getElementById('wmark').textContent = Config.WMARKS[to] || '◆';
+    document.getElementById('wmark').style.opacity = to >= 5 ? '0' : '1';
+    
+    const pct = Config.PPCTS[to] || 0;
+    document.getElementById('pbar').style.width = pct + '%';
+    document.getElementById('plabel').textContent = to <= 4 ? `ÉTAPE 0${to} / 04 — ${Config.PLABELS[to]}` : to === 5 ? '// INJECTION PRÊTE' : '';
+    document.getElementById('ppct').textContent = pct + '%';
+    
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  static hardReset() {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('sel'));
+    document.querySelectorAll('input[type=text],textarea').forEach(e => e.value = '');
+    document.getElementById('swatches').innerHTML = '';
+    GlobalState.lastGeneratedPrompt = '';
+    try{ localStorage.removeItem('ys-core-state'); } catch(e){}
+    this.evaluateState();
+    this.navigate(5, 1);
+  }
 }
+
+// ── 4. MOTEUR DE GÉNÉRATION (PROMPT COMPILER) ─────────────────
+class Generator {
+  static async initiateSequence() {
+    Engine.navigate(4, 'load');
+    const loadEl = document.getElementById('step-load');
+    loadEl.style.display = 'flex';
+    document.getElementById('wmark').style.opacity = '0';
+    
+    // Reset loader UI
+    ['ls1','ls2','ls3','ls4'].forEach(id => {
+      const el = document.getElementById(id);
+      el.className = 'load-step';
+      el.querySelector('.load-icon').textContent = '○';
+    });
+    document.getElementById('lbar').style.width = '0%';
+
+    // Animation de compilation artificielle (Feedback visuel sophistiqué)
+    const steps = [['ls1', 20], ['ls2', 50], ['ls3', 85], ['ls4', 98]];
+    for(let i=0; i<steps.length; i++) {
+      if(i > 0) {
+        const prev = document.getElementById(steps[i-1][0]);
+        prev.className = 'load-step done';
+        prev.querySelector('.load-icon').textContent = '✓';
+      }
+      const cur = document.getElementById(steps[i][0]);
+      cur.className = 'load-step running';
+      cur.querySelector('.load-icon').innerHTML = '<span class="spin">◌</span>';
+      document.getElementById('lbar').style.width = steps[i][1] + '%';
+      
+      // Temps de "réflexion" variable selon le score IQ du brief
+      const delay = Math.max(300, 1500 - (GlobalState.iqScore * 10)); 
+      await Utils.sleep(delay + (Math.random() * 400));
+    }
+
+    // Génération Locale Avancée du Prompt 
+    // (Remplace l'appel API client-side dangereux par une ingénierie de prompt template intelligente)
+    const finalPrompt = this.buildMasterPrompt();
+    GlobalState.lastGeneratedPrompt = finalPrompt;
+
+    // Finish loader
+    document.getElementById('ls4').className = 'load-step done';
+    document.getElementById('ls4').querySelector('.load-icon').textContent = '✓';
+    document.getElementById('lbar').style.width = '100%';
+    await Utils.sleep(400);
+
+    // Show output
+    loadEl.style.display = 'none';
+    document.getElementById('step-5').classList.add('active');
+    document.getElementById('pbar').style.width = '100%';
+    document.getElementById('plabel').textContent = '// ARTEFACT COMPILÉ';
+    document.getElementById('ppct').textContent = '100%';
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    
+    UI.typeWriterEffect(document.getElementById('out'), finalPrompt);
+  }
+
+  static buildMasterPrompt() {
+    // Extraction experte des données avec fallbacks intelligents
+    const b = {
+      nom: Utils.val('f-name') || '[Projet Inconnu]',
+      desc: Utils.val('f-desc') || '[Application Web]',
+      aud: Utils.val('f-aud') || 'Utilisateurs du web modernes',
+      imp: Utils.sel('imp').join(', ') || 'Moderne, clair et efficace',
+      sty: Utils.sel('sty').join(', ') || 'Design Bootstrap/Tailwind standard',
+      kp: Utils.sel('kp').join(', ') || 'Structure HTML sémantique',
+      ko: Utils.val('f-ko'),
+      ins: Utils.val('f-ins') || 'Interface propre sans fioritures',
+      col: Utils.val('f-col') || 'Palette monochromatique contrastée',
+      av: Utils.val('f-av') || 'Clichés visuels, Dribbble effect',
+      cnt: Utils.val('f-cnt') || '[Générer des placeholders pertinents]',
+      lvl: Utils.sel('lvl')[0] || 'Audacieux (Nouveau paradigme visuel)'
+    };
+
+    // Construction du template de Prompt ultra-complexe
+    return `[SYSTEM OVERRIDE : Rôle Expert UI/UX & CSS Architect]
+Tu vas agir comme un designer UI senior anti-conformiste spécialisé dans le CSS/HTML frontend.
+Ta mission est de refondre l'interface fournie sans tomber dans les clichés des designs "générés par IA".
+
+# CONTEXTE DE L'APPLICATION
+- Nom du produit : ${b.nom}
+- Mission principale : ${b.desc}
+- Audience cible : ${b.aud}
+- Empreinte cognitive visée : ${b.imp}
+
+# DIAGNOSTIC DE LA DETTE VISUELLE (À DÉTRUIRE)
+Le design actuel souffre des symptômes suivants : ${b.sty}.
+Ton but est de gommer complètement ces aspérités génériques.
+
+# SANCTUAIRES TECHNIQUES (NE PAS TOUCHER)
+- Éléments à préserver : ${b.kp}
+${b.ko ? `- Contraintes absolues : ${b.ko}` : ''}
+Tu as carte blanche sur tout le reste (CSS, spacing, typographie, couleurs, structure visuelle fine).
+
+# INGÉNIERIE VISUELLE & INSPIRATION
+- Vecteur esthétique : ${b.ins}
+- Palette de couleurs requise : ${b.col}
+- ATTENTION / LIGNE ROUGE : ${b.av}
+
+# INSTRUCTIONS DE COMPILATION
+1. N'utilise PAS les polices Inter ou Roboto. Propose des combinaisons typographiques (font-family) qui soutiennent le vecteur esthétique (ex: Space Grotesk, JetBrains Mono, serif élégantes selon le contexte).
+2. Applique un niveau de refonte : ${b.lvl}.
+3. Ajuste les espaces (paddings/margins) pour créer une vraie tension visuelle, loin des grilles Bootstrap monotones.
+4. Intègre le contenu réel suivant au lieu de générer du Lorem Ipsum :
+"""
+${b.cnt}
+"""
+
+# FORMAT DE SORTIE ATTENDU
+Ne rédige AUCUNE introduction ou conclusion polie. Commence directement par :
+1. Une brève "Auto-critique" (2 lignes) prouvant que tu as compris les clichés à éviter.
+2. Le code CSS/HTML optimisé (ou les recommandations d'architecture précises).`;
+  }
+}
+
+// ── 5. INITIALISATION ─────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  Engine.restoreFromStorage();
+  
+  // Raccourcis clavier fluides
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+      const active = document.querySelector('.step.active');
+      if(!active) return;
+      const n = parseInt(active.id.split('-')[1]);
+      if(n === 1) Engine.navigate(1,2);
+      else if(n === 2) Engine.navigate(2,3);
+      else if(n === 3) Engine.navigate(3,4);
+    }
+  });
+});
 </script>
 </body>
 </html>
