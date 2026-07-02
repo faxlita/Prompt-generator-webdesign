@@ -8,19 +8,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
 <style>
-/* ── 1. VARIABLES & THEMES ── */
 :root {
-  /* Thème par défaut: Artsy */
   --bg-base: #F5F3EF;
-  --surface: rgba(255, 255, 255, 0.85); /* Verre dépoli */
+  --surface: rgba(255, 255, 255, 0.75); /* Flou réduit pour voir l'animation */
   --surface-solid: #FFFFFF;
   --border: rgba(0, 0, 0, 0.08);
   --text-main: #2D2B2A;
   --text-muted: #7A7671;
   
-  --c-1: #A09689; /* Taupe */
-  --c-2: #D2B095; /* Ocher */
-  --c-3: #E6D8D2; /* Quartz */
+  --c-1: #A09689; 
+  --c-2: #D2B095; 
+  --c-3: #E6D8D2; 
 
   --font-serif: 'Playfair Display', serif;
   --font-sans: 'Inter', sans-serif;
@@ -45,44 +43,73 @@ body {
   transition: background-color 1s ease;
 }
 
-/* ── 2. BACKGROUND ANIMATIONS (Fluid Mesh) ── */
-.bg-mesh {
+/* ── NOUVELLES ANIMATIONS BACKGROUND (Visibles & Géométriques) ── */
+.bg-animated {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
   z-index: -1;
   overflow: hidden;
-  filter: blur(90px);
-  opacity: 0.6;
 }
-.orb {
+
+.shape {
   position: absolute;
+  opacity: 0.6;
+  transition: background 1.5s ease, border-color 1.5s ease;
+}
+
+/* Grand cercle qui respire */
+.shape-1 {
+  width: 40vw; height: 40vw;
   border-radius: 50%;
-  animation: orbFloat 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-  transition: background 1.5s ease;
-}
-.orb-1 { width: 55vw; height: 55vw; top: -15%; left: -10%; background: var(--c-1); }
-.orb-2 { width: 45vw; height: 45vw; bottom: -10%; right: -5%; background: var(--c-2); animation-delay: -7s; }
-.orb-3 { width: 40vw; height: 40vw; top: 40%; left: 30%; background: var(--c-3); animation-delay: -14s; mix-blend-mode: multiply; }
-
-@keyframes orbFloat {
-  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  50% { transform: translate(5%, 10%) scale(1.1) rotate(45deg); }
-  100% { transform: translate(-5%, 5%) scale(0.95) rotate(-20deg); }
+  background: radial-gradient(circle, var(--c-3) 0%, transparent 70%);
+  top: -10%; left: -5%;
+  animation: float1 20s infinite alternate ease-in-out;
 }
 
-/* Grain overlay pour la texture */
+/* Ligne arquée qui tourne */
+.shape-2 {
+  width: 50vw; height: 50vw;
+  border-radius: 50%;
+  border: 2px solid var(--c-2);
+  border-color: var(--c-2) transparent transparent transparent;
+  bottom: -15%; right: -10%;
+  animation: spin 30s infinite linear;
+}
+
+/* Forme abstraite géométrique (carré tournant) */
+.shape-3 {
+  width: 25vw; height: 25vw;
+  background: var(--c-1);
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  top: 40%; left: 60%;
+  opacity: 0.2;
+  animation: morph 15s infinite alternate ease-in-out;
+}
+
+@keyframes float1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(8%, 12%) scale(1.1); }
+}
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+@keyframes morph {
+  0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; transform: rotate(0deg) translate(0, 0); }
+  100% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; transform: rotate(45deg) translate(-10%, 10%); }
+}
+
 .noise-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
   background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
   z-index: 0; pointer-events: none;
 }
 
-/* ── 3. MAIN APP CONTAINER (Glassmorphism) ── */
+/* ── APP CONTAINER ── */
 .app-container {
   width: 96vw; max-width: 1600px; height: 92vh;
   background: var(--surface);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(12px); /* Flou réduit pour voir l'animation */
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: var(--r-lg);
   box-shadow: 0 40px 100px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.6);
@@ -90,10 +117,10 @@ body {
   overflow: hidden;
 }
 
-/* ── 4. SIDEBAR ── */
+/* ── SIDEBAR ── */
 .sidebar {
   width: 80px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.7);
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column; align-items: center;
   padding: 2.5rem 0; gap: 2.5rem; z-index: 60;
@@ -118,7 +145,7 @@ body {
   background: var(--text-main); border-radius: 3px 0 0 3px;
 }
 
-/* ── 5. FLYOUT PANELS (Settings, Palette) ── */
+/* ── PANELS ── */
 .panel {
   position: absolute; left: 80px; top: 0;
   width: 340px; height: 100%;
@@ -134,7 +161,6 @@ body {
 .panel-title { font-family: var(--font-serif); font-size: 22px; color: var(--text-main); }
 .close-btn { background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; }
 
-/* Theme Selector */
 .theme-option {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 16px; border-radius: var(--r-md);
@@ -146,7 +172,6 @@ body {
 .theme-dots { display: flex; gap: 4px; }
 .tdot { width: 12px; height: 12px; border-radius: 50%; }
 
-/* Settings Toggles */
 .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .setting-label { font-size: 13px; font-weight: 500; }
 .toggle { width: 40px; height: 22px; background: var(--c-1); border-radius: 20px; position: relative; cursor: pointer; transition: background 0.3s; }
@@ -155,12 +180,12 @@ body {
 .toggle.off::after { transform: translateX(0); }
 .toggle:not(.off)::after { transform: translateX(18px); }
 
-/* ── 6. MAIN CONTENT (Briefing) ── */
+/* ── MAIN CONTENT ── */
 .main { flex: 1; display: flex; flex-direction: column; }
 .topbar {
   height: 80px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 3.5rem; background: rgba(255,255,255,0.3);
+  padding: 0 3.5rem; background: rgba(255,255,255,0.2);
 }
 .breadcrumbs { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
 
@@ -171,12 +196,11 @@ body {
 .hero-title { font-family: var(--font-serif); font-size: 48px; font-weight: 500; margin-bottom: 10px; }
 .hero-sub { font-size: 15px; color: var(--text-muted); margin-bottom: 3.5rem; max-width: 500px; line-height: 1.6; }
 
-/* Form Fields */
 .field { margin-bottom: 2.5rem; max-width: 680px; }
 label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
 input, textarea {
   width: 100%; font-family: var(--font-sans); font-size: 15px; color: var(--text-main);
-  background: rgba(255,255,255,0.6); border: 1px solid var(--border);
+  background: rgba(255,255,255,0.7); border: 1px solid var(--border);
   border-radius: var(--r-md); padding: 16px 20px; outline: none; transition: var(--trans);
 }
 input:focus, textarea:focus { background: #FFF; border-color: var(--text-main); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
@@ -190,29 +214,25 @@ textarea { min-height: 100px; resize: vertical; }
 .chip:hover { border-color: var(--text-main); color: var(--text-main); }
 .chip.sel { background: var(--text-main); color: #FFF; border-color: var(--text-main); }
 
-/* ── 7. MOODBOARD (Right Panel) ── */
+/* ── MOODBOARD ── */
 .moodboard {
-  width: 420px; background: rgba(255,255,255,0.7);
+  width: 420px; background: rgba(255,255,255,0.8);
   border-left: 1px solid var(--border); padding: 3.5rem 2.5rem;
   display: flex; flex-direction: column; gap: 2.5rem;
 }
 .mb-header { font-family: var(--font-serif); font-size: 22px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
 
-/* Live Preview Card */
 .mb-card { background: #FFF; border-radius: var(--r-md); padding: 25px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.02); min-height: 140px; }
 .mb-proj-name { font-family: var(--font-serif); font-size: 24px; margin-bottom: 10px; color: var(--text-main); }
 .mb-proj-desc { font-size: 13px; line-height: 1.6; color: var(--text-muted); }
 
-/* Palette Display */
 .mb-colors { display: flex; gap: 15px; margin-top: 15px; }
 .mb-color-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .mb-circle { width: 50px; height: 50px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: background 1s ease; }
 .mb-hex { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
 
-/* Typo Preview */
 .typo-preview { font-family: var(--font-serif); font-size: 18px; font-style: italic; line-height: 1.5; color: var(--text-main); border-left: 2px solid var(--c-2); padding-left: 15px; transition: border-color 1s ease; }
 
-/* Actions */
 .mb-actions { margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--border); }
 .btn-generate {
   width: 100%; background: var(--text-main); color: #FFF;
@@ -224,7 +244,7 @@ textarea { min-height: 100px; resize: vertical; }
 .btn-generate:hover { background: #000; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
 .btn-generate:disabled { opacity: 0.5; pointer-events: none; }
 
-/* ── 8. MODAL OUTPUT (Overlay) ── */
+/* ── MODAL OUTPUT ── */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
   background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px);
@@ -244,17 +264,16 @@ textarea { min-height: 100px; resize: vertical; }
 .btn-ghost { background: transparent; border: 1px solid var(--border); padding: 12px 24px; border-radius: var(--r-pill); font-weight: 500; cursor: pointer; transition: var(--trans); }
 .btn-ghost:hover { border-color: var(--text-main); }
 
-/* SVG Icon Helper */
 svg.ic { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 </style>
 </head>
 <body>
 
 <div class="noise-overlay"></div>
-<div class="bg-mesh">
-  <div class="orb orb-1" id="orb1"></div>
-  <div class="orb orb-2" id="orb2"></div>
-  <div class="orb orb-3" id="orb3"></div>
+<div class="bg-animated">
+  <div class="shape shape-1" id="shape1"></div>
+  <div class="shape shape-2" id="shape2"></div>
+  <div class="shape shape-3" id="shape3"></div>
 </div>
 
 <div class="app-container">
@@ -280,8 +299,7 @@ svg.ic { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; fil
       <h3 class="panel-title">Curated Palettes</h3>
       <button class="close-btn" onclick="UI.closePanels()">&times;</button>
     </div>
-    <div id="theme-list">
-      </div>
+    <div id="theme-list"></div>
   </div>
 
   <div id="panel-settings" class="panel">
@@ -347,7 +365,7 @@ svg.ic { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; fil
     <div class="mb-card" id="mb-preview">
       <h4 class="mb-proj-name" id="l-name" style="color:var(--text-muted); font-style:italic">Nom du projet</h4>
       <p class="mb-proj-desc" id="l-desc">Complétez le brief pour voir l'âme du projet se matérialiser ici.</p>
-      <div style="display:flex; gap:6px; margin-top:15px" id="l-chips"></div>
+      <div style="display:flex; gap:6px; margin-top:15px; flex-wrap:wrap" id="l-chips"></div>
     </div>
 
     <div>
@@ -394,7 +412,6 @@ svg.ic { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; fil
 </div>
 
 <script>
-// --- DONNÉES (THEMES) ---
 const themes = [
   { id: 'artsy', name: 'Artsy Analog', c1: '#A09689', c2: '#D2B095', c3: '#E6D8D2', bg: '#F5F3EF' },
   { id: 'tokyo', name: 'Tokyo Night', c1: '#7AA2F7', c2: '#BB9AF7', c3: '#2AC3DE', bg: '#1A1B26' },
@@ -405,7 +422,6 @@ const themes = [
 let currentTheme = themes[0];
 let generatedPrompt = '';
 
-// --- UI & LOGIQUE VISUELLE ---
 const UI = {
   init() {
     this.renderThemeList();
@@ -448,16 +464,14 @@ const UI = {
 
   applyTheme(id) {
     currentTheme = themes.find(t => t.id === id);
-    this.renderThemeList(); // Refresh active state
+    this.renderThemeList();
     
-    // Update CSS Vars for Animations and UI
     const root = document.documentElement;
     root.style.setProperty('--c-1', currentTheme.c1);
     root.style.setProperty('--c-2', currentTheme.c2);
     root.style.setProperty('--c-3', currentTheme.c3);
     root.style.setProperty('--bg-base', currentTheme.bg);
     
-    // Adapte la couleur du texte si le fond est très sombre (Tokyo/Mono)
     if(id === 'tokyo' || id === 'mono') {
       root.style.setProperty('--text-main', '#FFFFFF');
       root.style.setProperty('--surface', 'rgba(30, 30, 30, 0.7)');
@@ -465,10 +479,15 @@ const UI = {
       root.style.setProperty('--border', 'rgba(255, 255, 255, 0.1)');
     } else {
       root.style.setProperty('--text-main', '#2D2B2A');
-      root.style.setProperty('--surface', 'rgba(255, 255, 255, 0.85)');
+      root.style.setProperty('--surface', 'rgba(255, 255, 255, 0.75)');
       root.style.setProperty('--surface-solid', '#FFFFFF');
       root.style.setProperty('--border', 'rgba(0, 0, 0, 0.08)');
     }
+
+    // Update Animations Colors
+    document.getElementById('shape1').style.background = `radial-gradient(circle, ${currentTheme.c3} 0%, transparent 70%)`;
+    document.getElementById('shape2').style.borderColor = `${currentTheme.c2} transparent transparent transparent`;
+    document.getElementById('shape3').style.background = currentTheme.c1;
 
     // Update Moodboard
     document.getElementById('mc-1').style.background = currentTheme.c1;
@@ -486,7 +505,6 @@ const UI = {
   closeModal() { document.getElementById('result-modal').classList.remove('active'); }
 };
 
-// --- MOTEUR LIVE ---
 const Engine = {
   updateLive() {
     const name = document.getElementById('f-name').value;
@@ -503,19 +521,17 @@ const Engine = {
     if(desc) ldesc.textContent = desc;
     else ldesc.textContent = "Complétez le brief pour voir l'âme du projet se matérialiser ici.";
 
-    lchips.innerHTML = chips.map(c => `<span style="font-size:10px; padding:3px 8px; border:1px solid var(--border); border-radius:10px">${c}</span>`).join('');
+    lchips.innerHTML = chips.map(c => `<span style="font-size:10px; padding:4px 10px; border:1px solid var(--border); border-radius:12px">${c}</span>`).join('');
   }
 };
 
-// --- GÉNÉRATEUR ---
 const Generator = {
   async compile() {
     const btn = document.getElementById('btn-gen');
-    btn.innerHTML = '<span style="animation: orbFloat 1s infinite linear">⚙</span> Compilation...';
+    btn.innerHTML = 'Compilation...';
     btn.disabled = true;
 
-    // Fake delay for UX
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise(r => setTimeout(r, 800));
 
     const name = document.getElementById('f-name').value || 'Projet Minimal';
     const desc = document.getElementById('f-desc').value || 'Une interface épurée et intentionnelle.';
@@ -552,8 +568,7 @@ Renvoie uniquement le code HTML/CSS propre et optimisé. Aucun texte d'introduct
   },
 
   async typewriterEffect(el, text) {
-    el.innerHTML = '';
-    const formatted = text.split('\n').map(line => {
+    el.innerHTML = text.split('\n').map(line => {
       if(line.startsWith('#')) return `<span style="color:var(--text-main); font-weight:bold">${line}</span>`;
       if(line.includes(':')) {
         const p = line.split(':');
@@ -561,9 +576,6 @@ Renvoie uniquement le code HTML/CSS propre et optimisé. Aucun texte d'introduct
       }
       return `<span style="color:var(--text-muted)">${line}</span>`;
     }).join('<br>');
-    
-    // Affichage direct pour éviter d'attendre 10 secondes (UX)
-    el.innerHTML = formatted; 
   },
 
   copy() {
@@ -585,7 +597,6 @@ Renvoie uniquement le code HTML/CSS propre et optimisé. Aucun texte d'introduct
   }
 };
 
-// Initialisation
 window.onload = () => UI.init();
 </script>
 </body>
