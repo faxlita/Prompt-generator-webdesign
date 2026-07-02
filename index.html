@@ -3,352 +3,350 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Your Style — Prompt generator</title>
+<title>Your Style — Artsy Prompt Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-/* ... [LE CSS RESTE STRICTEMENT IDENTIQUE À TON CODE ORIGINAL] ... */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── PALETTE ARTSY / CREATIVE ── */
 :root{
-  --bg:#0C0C0E;--surface:#161618;--surface2:#1E1E21;--border:#252528;--borders:#35353A;
-  --text:#EDEAE2;--text2:#9A9AA6;--text3:#5A5A62;
-  --orange:#FF4500;--oranged:#CC3700;--orangebg:rgba(255,69,0,.08);--orangebd:rgba(255,69,0,.3);
-  --green:#22c55e;--greenbg:rgba(34,197,94,.08);--greenbd:rgba(34,197,94,.3);
-  --red:#ef4444;--redbg:rgba(239,68,68,.08);
-  --display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
-  --r:4px;
+  --bg: #F4F1EB;          /* Beige chaud */
+  --surface: #FFFFFF;     /* Blanc pur pour les cartes */
+  --surface2: #FAFAFA;    /* Gris très clair */
+  --border: #E8E5DF;      /* Bordure douce */
+  --borders: #DCD8D0;
+  
+  --text: #2C2A28;        /* Noir d'encre doux */
+  --text2: #6B665E;       /* Gris taupe */
+  --text3: #958F85;
+  
+  --accent: #D96C4E;      /* Terracotta / Orange brûlé */
+  --accent-hover: #C55D41;
+  --accent-bg: rgba(217, 108, 78, 0.08);
+  
+  --green: #6C8D7A;       /* Vert sauge */
+  --green-bg: rgba(108, 141, 122, 0.1);
+  
+  --display: 'Fraunces', serif;
+  --body: 'DM Sans', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  
+  --r: 24px; /* Angles très arrondis */
 }
+
 html{scroll-behavior:smooth}
 body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 1.25rem 7rem}
-.masthead{width:100%;max-width:640px;padding:4rem 0 2.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem}
-.masthead-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:1.25rem;flex-wrap:wrap}
-.masthead-tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);display:flex;align-items:center;gap:10px}
-.masthead-tag::after{content:'';flex:1;height:1px;background:var(--border)}
-.score-pill{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:6px 12px}
-.score-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
-.score-bar-track{width:60px;height:3px;background:var(--border);border-radius:1px;overflow:hidden}
-.score-bar-fill{height:100%;background:var(--orange);border-radius:1px;transition:width .4s ease,background .4s}
-.score-val{font-family:var(--mono);font-size:10px;color:var(--orange);min-width:28px;text-align:right;transition:color .4s}
-h1{font-family:var(--display);font-size:clamp(28px,6vw,50px);font-weight:700;line-height:1.05;letter-spacing:-.02em;margin-bottom:.85rem}
-h1 .acc{color:var(--orange)}
-.masthead p{font-size:13.5px;color:var(--text2);line-height:1.7;max-width:420px}
-.prog-outer{width:100%;max-width:640px;margin-bottom:2rem}
-.prog-track{width:100%;height:2px;background:var(--border);margin-bottom:.65rem;position:relative}
-.prog-fill{height:100%;background:var(--orange);transition:width .45s cubic-bezier(.4,0,.2,1);position:relative}
-.prog-fill::after{content:'';position:absolute;right:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 10px var(--orange);transition:opacity .3s}
-.prog-meta{display:flex;justify-content:space-between}
-.prog-text{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em}
-.prog-pct{font-family:var(--mono);font-size:9px;color:var(--orange)}
-.card{width:100%;max-width:640px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;position:relative}
-.wmark{position:absolute;top:-15px;right:1.5rem;font-family:var(--display);font-size:130px;font-weight:700;color:var(--surface2);line-height:1;user-select:none;pointer-events:none;z-index:0;letter-spacing:-.04em;transition:opacity .3s}
-.card-inner{padding:2.5rem;position:relative;z-index:1}
+
+/* ── MASTHEAD ── */
+.masthead{width:100%;max-width:720px;padding:5rem 0 3rem;border-bottom:1px solid var(--border);margin-bottom:3rem;text-align:center}
+.masthead-tag{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;display:inline-block}
+h1{font-family:var(--display);font-size:clamp(32px, 7vw, 56px);font-weight:600;line-height:1.1;letter-spacing:-.03em;margin-bottom:1.2rem;color:#1A1918}
+h1 em{font-style:italic;color:var(--accent);font-weight:400}
+.masthead p{font-size:16px;color:var(--text2);line-height:1.6;max-width:500px;margin:0 auto}
+
+/* ── PROGRESSION ── */
+.prog-outer{width:100%;max-width:720px;margin-bottom:2rem}
+.prog-meta{display:flex;justify-content:space-between;margin-bottom:1rem}
+.prog-text{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+.prog-pct{font-family:var(--mono);font-size:10px;color:var(--accent);font-weight:500}
+.prog-track{width:100%;height:4px;background:var(--border);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:var(--accent);transition:width .6s cubic-bezier(.4,0,.2,1);border-radius:4px}
+
+/* ── SCORE PILL (Floating) ── */
+.score-wrapper{position:fixed;top:20px;right:20px;z-index:100;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.9);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:40px;padding:8px 16px;box-shadow:0 4px 15px rgba(0,0,0,0.03)}
+.score-label{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--text2)}
+.score-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .4s}
+.score-val{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--text)}
+
+/* ── CARD (Moodboard Style) ── */
+.card{width:100%;max-width:720px;background:var(--surface);border-radius:var(--r);box-shadow:0 20px 60px rgba(44, 42, 40, 0.04);position:relative;padding:3.5rem}
+@media(max-width:600px){.card{padding:2rem}}
+
+/* ── STEPS ── */
 .step{display:none}
-.step.active{display:block;animation:rise .22s ease}
-@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-.step-eye{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:.55rem}
-.step-title{font-family:var(--display);font-size:23px;font-weight:700;line-height:1.2;letter-spacing:-.02em;margin-bottom:.3rem}
-.step-sub{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:1.85rem}
-.field{margin-top:1.4rem}
-label{display:block;font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
-input[type=text],textarea{width:100%;font-family:var(--body);font-size:13.5px;color:var(--text);background:var(--bg);border:1px solid var(--borders);border-radius:var(--r);padding:11px 14px;outline:none;transition:border-color .15s,background .15s;line-height:1.55;-webkit-appearance:none}
-input[type=text]:focus,textarea:focus{border-color:var(--orange);background:var(--surface2)}
-textarea{resize:vertical;min-height:76px}
+.step.active{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.step-title{font-family:var(--display);font-size:32px;font-weight:600;line-height:1.2;letter-spacing:-.02em;margin-bottom:.5rem;color:#1A1918}
+.step-sub{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:2.5rem}
+
+/* ── FIELDS ── */
+.field{margin-top:1.8rem}
+label{display:block;font-family:var(--body);font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px}
+input[type=text],textarea{width:100%;font-family:var(--body);font-size:15px;color:var(--text);background:#FCFBFA;border:1px solid var(--border);border-radius:12px;padding:14px 18px;outline:none;transition:all .2s;line-height:1.6;-webkit-appearance:none}
+input[type=text]:focus,textarea:focus{border-color:var(--accent);background:#FFF;box-shadow:0 0 0 4px var(--accent-bg)}
+textarea{resize:vertical;min-height:90px}
 input::placeholder,textarea::placeholder{color:var(--text3)}
-.hint{font-size:11px;color:var(--text3);line-height:1.55;margin-top:5px}
+.hint{font-size:12px;color:var(--text3);line-height:1.5;margin-top:8px;font-style:italic}
+
+/* Color preview */
 .col-wrap{position:relative}
-.col-swatches{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;min-height:0;transition:min-height .2s}
-.swatch{width:22px;height:22px;border-radius:2px;border:1px solid rgba(255,255,255,.1);flex-shrink:0}
-.div{width:100%;height:1px;background:var(--border);margin:1.65rem 0}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.chip{display:inline-flex;align-items:center;padding:6px 12px;border-radius:2px;border:1px solid var(--borders);background:var(--bg);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;user-select:none}
-.chip:hover:not(.sel){border-color:var(--orangebd);color:var(--text);background:var(--orangebg)}
-.chip.sel{background:var(--orangebg);border-color:var(--orange);color:var(--orange);font-weight:500}
-.chip.sel::before{content:'→ ';font-family:var(--mono);font-size:10px;opacity:.8}
-.err-msg{font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:.04em;margin-top:5px;display:none}
+.col-swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;min-height:0;transition:min-height .2s}
+.swatch{width:28px;height:28px;border-radius:50%;border:1px solid rgba(0,0,0,.1);flex-shrink:0;box-shadow:0 2px 5px rgba(0,0,0,0.05)}
+
+/* ── DIVIDER ── */
+.div{width:100%;height:1px;background:var(--border);margin:2.5rem 0}
+
+/* ── CHIPS (Pill shaped) ── */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;padding:8px 16px;border-radius:30px;border:1px solid var(--borders);background:transparent;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;user-select:none}
+.chip:hover:not(.sel){border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.chip.sel{background:var(--accent);border-color:var(--accent);color:#FFF}
+.chip.sel::before{content:'✓ ';font-family:var(--mono);font-size:11px;margin-right:6px;opacity:.9}
+
+/* ── VALIDATION ── */
+.err-msg{font-family:var(--mono);font-size:11px;color:var(--accent);margin-top:6px;display:none}
 .err-msg.show{display:block}
-input.invalid,textarea.invalid{border-color:var(--red)!important}
-.nav{display:flex;align-items:center;gap:10px;margin-top:2.25rem;padding-top:1.5rem;border-top:1px solid var(--border)}
-.btn{display:inline-flex;align-items:center;gap:8px;border:none;padding:12px 22px;border-radius:2px;font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:all .15s;text-transform:uppercase}
-.btn-dark{background:var(--text);color:var(--bg);margin-left:auto}
-.btn-dark:hover{background:#fff;transform:translateY(-1px)}
-.btn-fire{background:var(--orange);color:#fff;margin-left:auto}
-.btn-fire:hover{background:var(--oranged);transform:translateY(-1px)}
-.btn:active{transform:translateY(0)!important}
-.btn-ghost{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--borders);padding:11px 16px;border-radius:2px;font-family:var(--body);font-size:12px;color:var(--text3);cursor:pointer;transition:all .15s}
-.btn-ghost:hover{border-color:var(--text3);color:var(--text2)}
-#step-load{display:none}
-#step-load.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 0;gap:1.5rem}
-.load-title{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-.01em;text-align:center}
-.load-steps{display:flex;flex-direction:column;gap:.5rem;width:100%}
-.load-step{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text3);padding:8px 12px;border:1px solid var(--border);border-radius:2px;background:var(--bg);transition:all .3s}
-.load-step.running{color:var(--orange);border-color:var(--orangebd);background:var(--orangebg)}
-.load-step.done{color:var(--green);border-color:var(--greenbd);background:var(--greenbg)}
-.load-icon{font-size:12px;width:16px;text-align:center;flex-shrink:0}
-.spin{display:inline-block;animation:spin .8s linear infinite}
+input.invalid,textarea.invalid{border-color:var(--accent)!important;background:var(--accent-bg)!important}
+
+/* ── NAV BUTTONS ── */
+.nav{display:flex;align-items:center;gap:12px;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:none;padding:14px 28px;border-radius:40px;font-family:var(--body);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-dark{background:var(--text);color:var(--surface);margin-left:auto}
+.btn-dark:hover{background:#000;transform:translateY(-2px);box-shadow:0 6px 15px rgba(0,0,0,0.1)}
+.btn-fire{background:var(--accent);color:#FFF;margin-left:auto}
+.btn-fire:hover{background:var(--accent-hover);transform:translateY(-2px);box-shadow:0 6px 15px rgba(217,108,78,0.25)}
+.btn-ghost{background:transparent;color:var(--text2);padding:14px 20px;border-radius:40px}
+.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+
+/* ── LOADING ── */
+#step-load{display:none;flex-direction:column;align-items:center;justify-content:center;padding:4rem 0;text-align:center}
+.load-title{font-family:var(--display);font-size:24px;font-weight:600;margin-bottom:2rem;color:#1A1918}
+.load-steps{display:flex;flex-direction:column;gap:1rem;width:100%;max-width:300px;margin:0 auto}
+.load-step{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12px;color:var(--text3);transition:all .3s}
+.load-step.running{color:var(--accent)}
+.load-step.done{color:var(--green)}
+.load-icon{font-size:14px;width:20px;text-align:center}
+.spin{display:inline-block;animation:spin 1s ease-in-out infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.load-bar-track{width:100%;height:2px;background:var(--border);border-radius:1px;overflow:hidden}
-.load-bar-fill{height:100%;background:var(--orange);border-radius:1px;transition:width .5s ease}
-.out-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:1.25rem}
-.out-title{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
-.out-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:2px;background:var(--greenbg);border:1px solid var(--greenbd);font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
-.bdot{width:5px;height:5px;border-radius:50%;background:var(--green)}
-.out-actions{display:flex;gap:6px;flex-shrink:0;margin-top:2px}
-.act-btn{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--borders);padding:8px 12px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
-.act-btn:hover{border-color:var(--orange);color:var(--orange)}
-.act-btn.copied{border-color:var(--green);color:var(--green);background:var(--greenbg)}
-.shell{background:var(--bg);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
-.shell-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border)}
-.d-r{width:9px;height:9px;border-radius:50%;background:#FF5F57}
-.d-y{width:9px;height:9px;border-radius:50%;background:#FEBC2E}
-.d-g{width:9px;height:9px;border-radius:50%;background:#28C840}
-.shell-label{font-family:var(--mono);font-size:9px;color:var(--text3);margin-left:auto;letter-spacing:.06em}
-.shell-body{padding:1.5rem;font-family:var(--mono);font-size:11.5px;line-height:1.9;white-space:pre-wrap;max-height:440px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--borders) transparent}
-.shell-body::-webkit-scrollbar{width:4px}
-.shell-body::-webkit-scrollbar-thumb{background:var(--borders);border-radius:2px}
-.ph-sec{color:#6366f1;font-weight:500}
-.ph-key{color:#a78bfa}
-.ph-val{color:#d4d4d8}
-.ph-arr{color:var(--orange)}
-.ph-num{color:#facc15}
-.ph-plain{color:#9ca3af}
-.cursor-blink{display:inline-block;width:7px;height:13px;background:var(--orange);vertical-align:middle;animation:blink .75s step-end infinite;border-radius:1px;margin-left:1px}
+
+/* ── OUTPUT SHELL (Artsy Terminal) ── */
+.out-header{margin-bottom:2rem}
+.out-title{font-family:var(--display);font-size:36px;font-weight:600;color:#1A1918;margin-bottom:1rem}
+.out-actions{display:flex;gap:10px}
+.act-btn{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);padding:10px 16px;border-radius:30px;font-family:var(--body);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;box-shadow:0 2px 5px rgba(0,0,0,0.02)}
+.act-btn:hover{border-color:var(--text);color:var(--text)}
+.act-btn.copied{border-color:var(--green);color:var(--green);background:var(--green-bg)}
+
+.shell{background:#FCFBFA;border-radius:16px;border:1px solid var(--border);box-shadow:inset 0 2px 10px rgba(0,0,0,0.02)}
+.shell-bar{padding:12px 20px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--text3)}
+.shell-body{padding:2rem;font-family:var(--mono);font-size:13px;line-height:1.8;white-space:pre-wrap;max-height:500px;overflow-y:auto;color:var(--text2)}
+
+/* Syntax Highlight pour le thème clair */
+.ph-sec{color:var(--text);font-weight:600;font-family:var(--body);font-size:15px;display:block;margin-top:10px}
+.ph-key{color:#8A6D5C;font-weight:500}
+.ph-val{color:var(--text)}
+.ph-arr{color:var(--accent)}
+.ph-num{color:var(--green)}
+.ph-plain{color:var(--text2)}
+.cursor-blink{display:inline-block;width:8px;height:14px;background:var(--accent);vertical-align:middle;animation:blink .8s step-end infinite;border-radius:2px;margin-left:2px}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.err-state{display:none;flex-direction:column;align-items:center;gap:1rem;padding:2.5rem 0;text-align:center}
-.err-state.show{display:flex}
-.err-state p{font-size:13px;color:var(--text2)}
-.err-icon{font-size:28px}
-svg.ic{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;flex-shrink:0}
-@media(max-width:480px){.card-inner{padding:1.5rem}.masthead{padding:2.5rem 0 2rem}.wmark{font-size:90px}.out-actions{flex-direction:column}}
+
+svg.ic{width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 </style>
 </head>
 <body>
 
+<div class="score-wrapper" title="Qualité du brief analysée par le moteur heuristique">
+  <span class="score-label">Densité du brief</span>
+  <div class="score-dot" id="sdot"></div>
+  <span class="score-val" id="sval">0/100</span>
+</div>
+
 <div class="masthead">
-  <div class="masthead-row">
-    <div class="masthead-tag">Your Style</div>
-    <div class="score-pill" title="Score de qualité du brief (complexité et précision)">
-      <span class="score-label">Brief IQ</span>
-      <div class="score-bar-track"><div class="score-bar-fill" id="sbar" style="width:0%"></div></div>
-      <span class="score-val" id="sval">0</span>
-    </div>
-  </div>
-  <h1>Ton site doit pas<br>ressembler à un site <span class="acc">IA.</span></h1>
-  <p>Remplis le brief. L'algorithme analyse tes choix et génère un prompt d'ingénierie inversée sur-mesure pour Claude ou ChatGPT.</p>
+  <span class="masthead-tag">Édition Créative</span>
+  <h1>Ton interface mérite de<br><em>raconter une histoire.</em></h1>
+  <p>Fournis tes intentions au moteur heuristique. Il rédigera un prompt d'ingénierie inversée pour extraire l'IA de ses schémas par défaut.</p>
 </div>
 
 <div class="prog-outer">
-  <div class="prog-track"><div class="prog-fill" id="pbar" style="width:0%"></div></div>
   <div class="prog-meta">
-    <span class="prog-text" id="plabel">ÉTAPE 01 / 04 — TON PRODUIT</span>
+    <span class="prog-text" id="plabel">01 — Contexte Produit</span>
     <span class="prog-pct" id="ppct">0%</span>
   </div>
+  <div class="prog-track"><div class="prog-fill" id="pbar" style="width:0%"></div></div>
 </div>
 
 <div class="card">
-  <div class="wmark" id="wmark">01</div>
-  <div class="card-inner">
+  <div id="step-1" class="step active">
+    <div class="step-title">L'Âme du produit</div>
+    <p class="step-sub">Définissons l'essence de ton projet pour créer un socle sémantique solide.</p>
 
-    <div id="step-1" class="step active">
-      <div class="step-eye">// Étape 01</div>
-      <div class="step-title">Ton produit</div>
-      <p class="step-sub">Ces infos ancrent le design dans ta réalité sémantique.</p>
-
-      <div class="field">
-        <label>Nom de l'app *</label>
-        <input type="text" id="f-name" placeholder="ex: Koa, FlowBoard, Nomad…" oninput="Engine.evaluateState()"/>
-        <div class="err-msg" id="err-name">// L'entité nécessite un identifiant.</div>
-      </div>
-      <div class="field">
-        <label>Ce que ça fait — une phrase *</label>
-        <textarea id="f-desc" style="min-height:62px" placeholder="ex: Un générateur de prompts pour que les sites n'aient plus l'air générés par IA." oninput="Engine.evaluateState()"></textarea>
-        <div class="err-msg" id="err-desc">// La fonction de l'app est requise pour le contexte.</div>
-      </div>
-      <div class="field">
-        <label>Audience cible</label>
-        <input type="text" id="f-aud" placeholder="ex: Freelances design, fondateurs..." oninput="Engine.evaluateState()"/>
-      </div>
-      <div class="div"></div>
-      <div class="field">
-        <label>Impression cognitivo-visuelle souhaitée</label>
-        <div class="chips">
-          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Professionnel & rassurant</span>
-          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Créatif & énergique</span>
-          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Premium & sobre</span>
-          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Artisanal & chaleureux</span>
-          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Technique & ultra-précis</span>
-          <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Brutaliste & décalé</span>
-        </div>
-      </div>
-      <div class="nav">
-        <button class="btn btn-dark" onclick="Engine.navigate(1,2)">Continuer <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    <div class="field">
+      <label>Comment s'appelle cette création ?</label>
+      <input type="text" id="f-name" placeholder="Ex: Maison Koto, Flow, Studio Minimal..." oninput="Engine.evaluateState()"/>
+      <div class="err-msg" id="err-name">Un nom est nécessaire pour incarner le projet.</div>
+    </div>
+    <div class="field">
+      <label>Sa raison d'être (en une phrase)</label>
+      <textarea id="f-desc" placeholder="Ex: Une plateforme pour les artisans du web qui refusent l'esthétique standard." oninput="Engine.evaluateState()"></textarea>
+      <div class="err-msg" id="err-desc">Décris la fonction principale pour continuer.</div>
+    </div>
+    <div class="field">
+      <label>À qui s'adresse-t-on ?</label>
+      <input type="text" id="f-aud" placeholder="Ex: Créatifs indépendants, esthètes, architectes..." oninput="Engine.evaluateState()"/>
+    </div>
+    <div class="div"></div>
+    <div class="field">
+      <label>L'atmosphère recherchée</label>
+      <div class="chips">
+        <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Élégant & Éditorial</span>
+        <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Organique & Chaleureux</span>
+        <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Minimalisme Radical</span>
+        <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Brutaliste & Expressif</span>
+        <span class="chip" data-g="imp" onclick="UI.toggleChipSingle(this)">Technique & Raffiné</span>
       </div>
     </div>
+    <div class="nav">
+      <button class="btn btn-dark" onclick="Engine.navigate(1,2)">Continuer <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
 
-    <div id="step-2" class="step">
-      <div class="step-eye">// Étape 02</div>
-      <div class="step-title">La dette visuelle (Style actuel)</div>
-      <p class="step-sub">Identifier précisément les tropes IA à détruire.</p>
+  <div id="step-2" class="step">
+    <div class="step-title">La Fracture Visuelle</div>
+    <p class="step-sub">Quels sont les clichés actuels que nous devons gommer ?</p>
 
-      <div class="field">
-        <label>Symptômes actuels du design (plusieurs choix)</label>
-        <div class="chips">
-          <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Trop parfait / Lisse (Dribbble effect)</span>
-          <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Boutons primaires géants avec ombres portées douces</span>
-          <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Polices Inter/Roboto partout sans hiérarchie forte</span>
-          <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Dégradés violets/bleus typiques Web3/IA</span>
-          <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Bordures grises (border-slate-200) excessives</span>
-        </div>
-      </div>
-      <div class="div"></div>
-      <div class="field">
-        <label>Sanctuaires (À préserver absolument)</label>
-        <div class="chips">
-          <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">DOM / Structure HTML</span>
-          <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">Grid & Flexbox layouts</span>
-          <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">Logique d'interaction (JS)</span>
-          <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">Accessibilité (ARIA)</span>
-        </div>
-      </div>
-      <div class="field">
-        <label>Autre contrainte stricte ?</label>
-        <input type="text" id="f-ko" placeholder="ex: Mon logo SVG, la lib Tailwind, les icônes Lucide..." oninput="Engine.evaluateState()"/>
-      </div>
-      <div class="nav">
-        <button class="btn-ghost" onclick="Engine.navigate(2,1)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
-        <button class="btn btn-dark" onclick="Engine.navigate(2,3)">Continuer <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    <div class="field">
+      <label>Symptômes actuels du design (choix multiples)</label>
+      <div class="chips">
+        <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Trop lisse / Effet "Template"</span>
+        <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Boutons primaires géants avec ombres</span>
+        <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Polices Inter/Roboto sans âme</span>
+        <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Dégradés bleus/violets typiques</span>
+        <span class="chip" data-g="sty" onclick="UI.toggleChipMulti(this)">Trop de conteneurs bordés de gris clair</span>
       </div>
     </div>
-
-    <div id="step-3" class="step">
-      <div class="step-eye">// Étape 03</div>
-      <div class="step-title">Ingénierie de l'Inspiration</div>
-      <p class="step-sub">On fournit au LLM des vecteurs sémantiques forts pour le sortir de son espace latent par défaut.</p>
-
-      <div class="field">
-        <label>Références architecturales / visuelles</label>
-        <textarea id="f-ins" placeholder="ex: Interface terminal old-school, esthétique Bauhaus, manuel technique des années 80, Linear.app pour la densité..." oninput="Engine.evaluateState()"></textarea>
-      </div>
-      <div class="field">
-        <label>Théorie des couleurs (Hex acceptés)</label>
-        <div class="col-wrap">
-          <input type="text" id="f-col" placeholder="ex: #FF4500 pour l'accent, fond monocrhome très sombre, texte os..." oninput="UI.updateSwatches();Engine.evaluateState()"/>
-          <div class="col-swatches" id="swatches"></div>
-        </div>
-      </div>
-      <div class="field">
-        <label>Anti-Prompt (À éviter de toute urgence)</label>
-        <textarea id="f-av" style="min-height:58px" placeholder="ex: Pas de glassmorphism, pas de coins trop arrondis, interdiction d'utiliser du bleu pastel..." oninput="Engine.evaluateState()"></textarea>
-      </div>
-      <div class="nav">
-        <button class="btn-ghost" onclick="Engine.navigate(3,2)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
-        <button class="btn btn-dark" onclick="Engine.navigate(3,4)">Continuer <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    <div class="div"></div>
+    <div class="field">
+      <label>Sanctuaires (Les éléments intouchables)</label>
+      <div class="chips">
+        <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">Structure de la page</span>
+        <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">Logique de navigation</span>
+        <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">Fonctionnalités JS</span>
+        <span class="chip" data-g="kp" onclick="UI.toggleChipMulti(this)">Accessibilité</span>
       </div>
     </div>
+    <div class="field">
+      <label>Autre contrainte stricte ?</label>
+      <input type="text" id="f-ko" placeholder="Ex: Conserver mon logo svg, garder Tailwind..." oninput="Engine.evaluateState()"/>
+    </div>
+    <div class="nav">
+      <button class="btn-ghost" onclick="Engine.navigate(2,1)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+      <button class="btn btn-dark" onclick="Engine.navigate(2,3)">Continuer <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
 
-    <div id="step-4" class="step">
-      <div class="step-eye">// Étape 04 — Dernière</div>
-      <div class="step-title">Paramètres de compilation</div>
-      <p class="step-sub">Ajustement final du comportement du modèle.</p>
+  <div id="step-3" class="step">
+    <div class="step-title">Inspirations & Matières</div>
+    <p class="step-sub">Fournissons des vecteurs tangibles pour influencer l'esthétique du modèle.</p>
 
-      <div class="field">
-        <label>Échantillon de copie (Texte réel)</label>
-        <textarea id="f-cnt" style="min-height:100px" placeholder="Si l'IA n'a pas de vrai texte, elle fera des choix de typo génériques. Colle ici ton H1, quelques sous-titres, et le label de ton bouton principal." oninput="Engine.evaluateState()"></textarea>
+    <div class="field">
+      <label>Références architecturales ou éditoriales</label>
+      <textarea id="f-ins" placeholder="Ex: L'esthétique d'un magazine Kinfolk, les couleurs d'un café japonais, la typographie du New York Times..." oninput="Engine.evaluateState()"></textarea>
+    </div>
+    <div class="field">
+      <label>Palette de couleurs (Codes Hex acceptés)</label>
+      <div class="col-wrap">
+        <input type="text" id="f-col" placeholder="Ex: Fond #F4F1EB, textes encre #2C2A28, accent Terracotta #D96C4E..." oninput="UI.updateSwatches();Engine.evaluateState()"/>
+        <div class="col-swatches" id="swatches"></div>
       </div>
-      <div class="div"></div>
-      <div class="field">
-        <label>Niveau d'agressivité de la refonte</label>
-        <div class="chips">
-          <span class="chip" data-g="lvl" onclick="UI.toggleChipSingle(this)">Conservateur (CSS pur, spacing/typo)</span>
-          <span class="chip" data-g="lvl" onclick="UI.toggleChipSingle(this)">Audacieux (Nouveau paradigme visuel)</span>
-          <span class="chip" data-g="lvl" onclick="UI.toggleChipSingle(this)">Destructeur (On casse tout sauf la fonctionnalité)</span>
-        </div>
+    </div>
+    <div class="field">
+      <label>Ligne Rouge (Ce qui est absolument interdit)</label>
+      <textarea id="f-av" placeholder="Ex: Interdit d'utiliser du bleu pastel, pas de glassmorphism, pas de coins trop arrondis..." oninput="Engine.evaluateState()"></textarea>
+    </div>
+    <div class="nav">
+      <button class="btn-ghost" onclick="Engine.navigate(3,2)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+      <button class="btn btn-dark" onclick="Engine.navigate(3,4)">Continuer <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+
+  <div id="step-4" class="step">
+    <div class="step-title">Copie & Intensité</div>
+    <p class="step-sub">Le design réagit au texte. Fournis du vrai contenu pour calibrer la typographie.</p>
+
+    <div class="field">
+      <label>Échantillon de texte réel</label>
+      <textarea id="f-cnt" style="min-height:120px" placeholder="Colle ici ton Titre H1, quelques sous-titres, et le label d'un bouton. L'IA a besoin de ces mots pour concevoir la bonne mise en forme." oninput="Engine.evaluateState()"></textarea>
+    </div>
+    <div class="div"></div>
+    <div class="field">
+      <label>Profondeur de la refonte</label>
+      <div class="chips">
+        <span class="chip" data-g="lvl" onclick="UI.toggleChipSingle(this)">Subtile (Couleurs & Typo uniquement)</span>
+        <span class="chip" data-g="lvl" onclick="UI.toggleChipSingle(this)">Équilibrée (Nouveau traitement des blocs)</span>
+        <span class="chip" data-g="lvl" onclick="UI.toggleChipSingle(this)">Radicale (Reconstruction visuelle totale)</span>
       </div>
-      <div class="nav">
-        <button class="btn-ghost" onclick="Engine.navigate(4,3)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
-        <button class="btn btn-fire" onclick="Generator.initiateSequence()">
-          <svg class="ic" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 3l1.9 5.8L19 10l-5.1 1.2L12 17l-1.9-5.8L5 10l5.1-1.2Z"/></svg>
-          Compiler le Prompt
+    </div>
+    <div class="nav">
+      <button class="btn-ghost" onclick="Engine.navigate(4,3)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+      <button class="btn btn-fire" onclick="Generator.initiateSequence()">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L19 10l-5.1 1.2L12 17l-1.9-5.8L5 10l5.1-1.2Z"/></svg>
+        Compiler l'Artefact
+      </button>
+    </div>
+  </div>
+
+  <div id="step-load">
+    <div class="load-title">Tissage du Prompt...</div>
+    <div class="load-steps">
+      <div class="load-step" id="ls1"><span class="load-icon">○</span>Analyse de la poésie du brief</div>
+      <div class="load-step" id="ls2"><span class="load-icon">○</span>Alignement colorimétrique</div>
+      <div class="load-step" id="ls3"><span class="load-icon">○</span>Destruction des schémas IA</div>
+      <div class="load-step" id="ls4"><span class="load-icon">○</span>Fabrication finale</div>
+    </div>
+  </div>
+
+  <div id="step-5" class="step">
+    <div class="out-header">
+      <div class="out-title">Ton Artefact est prêt.</div>
+      <p style="color:var(--text2); margin-bottom:1.5rem">Colle ceci dans Claude ou ChatGPT pour transformer ton interface.</p>
+      
+      <div class="out-actions">
+        <button class="act-btn" id="cpbtn" onclick="UI.copyOutput()">
+          <svg class="ic" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copier le texte
+        </button>
+        <button class="act-btn" onclick="UI.downloadOutput()">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Télécharger .txt
         </button>
       </div>
     </div>
 
-    <div id="step-load">
-      <div class="load-title">Compilation heuristique en cours…</div>
-      <div class="load-steps">
-        <div class="load-step" id="ls1"><span class="load-icon">○</span>Analyse sémantique du brief</div>
-        <div class="load-step" id="ls2"><span class="load-icon">○</span>Pondération des contraintes</div>
-        <div class="load-step" id="ls3"><span class="load-icon">○</span>Génération des vecteurs anti-IA</div>
-        <div class="load-step" id="ls4"><span class="load-icon">○</span>Finalisation de l'artefact textuel</div>
-      </div>
-      <div class="load-bar-track" style="width:100%">
-        <div class="load-bar-fill" id="lbar" style="width:0%"></div>
-      </div>
+    <div class="shell">
+      <div class="shell-bar">prompt_creatif.txt</div>
+      <div class="shell-body" id="out"></div>
     </div>
 
-    <div id="step-5" class="step">
-      <div class="out-header">
-        <div>
-          <div class="out-title">Artefact généré.</div>
-          <div class="out-badge"><span class="bdot"></span>Prompt optimisé · Prêt à l'injection</div>
-        </div>
-        <div class="out-actions">
-          <button class="act-btn" id="cpbtn" onclick="UI.copyOutput()">
-            <svg class="ic" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copier
-          </button>
-          <button class="act-btn" onclick="UI.downloadOutput()">
-            <svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            .txt
-          </button>
-        </div>
-      </div>
-
-      <div class="shell">
-        <div class="shell-bar">
-          <div class="d-r"></div><div class="d-y"></div><div class="d-g"></div>
-          <span class="shell-label">prompt_engine_v2.txt — Master Prompt</span>
-        </div>
-        <div class="shell-body" id="out"></div>
-      </div>
-
-      <div class="nav" style="margin-top:1.25rem;padding-top:1.25rem">
-        <button class="btn-ghost" onclick="Engine.navigate(5,4)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Modifier les paramètres</button>
-        <button class="btn-ghost" style="margin-left:auto" onclick="Engine.hardReset()"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg> Purger la mémoire</button>
-      </div>
+    <div class="nav" style="justify-content:center; gap:20px; border:none">
+      <button class="btn-ghost" onclick="Engine.navigate(5,4)">Ajuster les paramètres</button>
+      <button class="btn-ghost" onclick="Engine.hardReset()">Nouveau projet</button>
     </div>
-
   </div>
+
 </div>
 
 <script>
 /**
- * YOUR STYLE - INTELLIGENCE CORE
- * Architecture refactorisée pour une complexité algorithmique accrue.
- * Utilise des classes modulaires, un scoring basé sur la densité d'information (Heuristique),
- * et un moteur de génération de prompt local extrêmement fin.
+ * ARTSY ENGINE - Logique de génération et d'interface
  */
 
-// ── 1. UTILITAIRES & ETAT ─────────────────────────────────────
 const Utils = {
   val: (id) => (document.getElementById(id) || {}).value?.trim() || '',
-  sel: (g) => [...document.querySelectorAll(`.chip.sel[data-g="${g}"]`)].map(c => c.textContent.replace('→ ', '').trim()),
+  sel: (g) => [...document.querySelectorAll(`.chip.sel[data-g="${g}"]`)].map(c => c.textContent.replace('✓ ', '').trim()),
   sleep: (ms) => new Promise(resolve => setTimeout(resolve, ms)),
   extractHex: (str) => [...str.matchAll(/#([0-9a-fA-F]{3,8})/g)].map(m => m[0])
 };
 
 const Config = {
-  WMARKS: ['','01','02','03','04','◆','◆'],
-  PLABELS: ['','CONTEXTE PRODUIT','DETTE VISUELLE','INGÉNIERIE VISUELLE','COMPILATION','',''],
+  PLABELS: ['','CONTEXTE PRODUIT','FRACTURE VISUELLE','INSPIRATIONS','COPIE & INTENSITÉ','',''],
   PPCTS: [0,0,25,50,75,100,100]
 };
 
-let GlobalState = {
-  lastGeneratedPrompt: '',
-  iqScore: 0
-};
+let GlobalState = { lastGeneratedPrompt: '', iqScore: 0 };
 
-// ── 2. MOTEUR D'INTERFACE (UI) ────────────────────────────────
 class UI {
   static toggleChipSingle(el) {
     const group = el.dataset.g;
@@ -379,18 +377,14 @@ class UI {
   }
 
   static updateScore(scoreObj) {
-    const bar = document.getElementById('sbar');
-    const val = document.getElementById('sval');
-    
-    // Le score peut dépasser 100 si le prompt est ultra-détaillé, on le cap visuellement
+    const sdot = document.getElementById('sdot');
+    const sval = document.getElementById('sval');
     const displayPct = Math.min(scoreObj.total, 100);
-    bar.style.width = displayPct + '%';
-    val.textContent = scoreObj.total;
+    sval.textContent = displayPct + '/100';
 
-    // Colorimétrie du score basée sur la complexité
-    if(scoreObj.total >= 85) { bar.style.background = '#22c55e'; val.style.color = '#22c55e'; } // Vert
-    else if(scoreObj.total >= 45) { bar.style.background = '#FEBC2E'; val.style.color = '#FEBC2E'; } // Jaune
-    else { bar.style.background = '#FF4500'; val.style.color = '#FF4500'; } // Orange/Rouge
+    if(scoreObj.total >= 85) { sdot.style.background = '#6C8D7A'; } // Vert
+    else if(scoreObj.total >= 45) { sdot.style.background = '#D9A05B'; } // Ocre
+    else { sdot.style.background = '#D96C4E'; } // Terracotta
   }
 
   static async typeWriterEffect(el, text) {
@@ -401,11 +395,11 @@ class UI {
     
     let i = 0;
     while(i < text.length) {
-      const chunk = text.slice(i, i + (Math.random() > 0.8 ? 4 : 2)); // Vitesse pseudo-aléatoire
+      const chunk = text.slice(i, i + (Math.random() > 0.8 ? 5 : 2));
       el.insertBefore(document.createTextNode(chunk), cursor);
       i += chunk.length;
       el.scrollTop = el.scrollHeight;
-      await Utils.sleep(Math.random() * 15 + 2); // Ultra rapide
+      await Utils.sleep(Math.random() * 12 + 2);
     }
     cursor.remove();
     el.innerHTML = this.syntaxHighlight(text);
@@ -414,16 +408,15 @@ class UI {
   static syntaxHighlight(text) {
     const lines = text.split('\n');
     return lines.map(line => {
-      if(/^#+ /.test(line) || /^\[[A-Z]+\]/.test(line)) return `<span class="ph-sec">${line}</span>`; // Titres & Tags
-      if(/^[A-ZÉÀÙÈÊÂÛÎÔ_ -]+:$/.test(line.trim())) return `<span class="ph-key">${line}</span>`; // Clés fortes
+      if(/^#+ /.test(line) || /^\[[A-Z]+\]/.test(line)) return `<span class="ph-sec">${line}</span>`;
+      if(/^[A-ZÉÀÙÈÊÂÛÎÔ_ -]+:$/.test(line.trim())) return `<span class="ph-key">${line}</span>`;
       if(/^(Nom|Mission|Audience|Style|Contraintes|Inspirations|Couleurs|Niveau|Texte)/i.test(line)) {
         const parts = line.split(':');
         return `<span class="ph-key">${parts[0]}:</span><span class="ph-val">${parts.slice(1).join(':')}</span>`;
       }
-      if(/^\s*[-•]/.test(line)) return `<span class="ph-arr">${line}</span>`; // Puces
-      if(/^\d\./.test(line.trim())) return `<span class="ph-num">${line}</span>`; // Chiffres
-      // Highlight hex codes specifically
-      let parsedLine = line.replace(/(#[0-9a-fA-F]{3,8})/g, '<span style="color:$1; background:rgba(255,255,255,0.1); padding:0 3px; border-radius:2px;">$1</span>');
+      if(/^\s*[-•]/.test(line)) return `<span class="ph-arr">${line}</span>`;
+      if(/^\d\./.test(line.trim())) return `<span class="ph-num">${line}</span>`;
+      let parsedLine = line.replace(/(#[0-9a-fA-F]{3,8})/g, '<span style="color:$1; background:rgba(255,255,255,0.8); padding:0 3px; border-radius:4px; font-weight:bold; border:1px solid #E8E5DF">$1</span>');
       return `<span class="ph-plain">${parsedLine}</span>`;
     }).join('\n');
   }
@@ -435,7 +428,7 @@ class UI {
       b.innerHTML = '<svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Copié !';
       setTimeout(() => {
         b.classList.remove('copied');
-        b.innerHTML = '<svg class="ic" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copier';
+        b.innerHTML = '<svg class="ic" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copier le texte';
       }, 2500);
     });
   }
@@ -445,27 +438,19 @@ class UI {
     const blob = new Blob([GlobalState.lastGeneratedPrompt], {type: 'text/plain'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `Prompt_Refonte_${Utils.val('f-name').replace(/\s+/g, '_') || 'Projet'}.txt`;
+    a.download = `Prompt_Artsy_${Utils.val('f-name').replace(/\s+/g, '_') || 'Projet'}.txt`;
     a.click();
   }
 }
 
-// ── 3. MOTEUR LOGIQUE & SCORING HEURISTIQUE ───────────────────
 class Engine {
   static evaluateState() {
-    // 1. Sauvegarde silencieuse locale
     this.saveToStorage();
-
-    // 2. Algorithme de calcul du "Brief IQ" (Qualité des données)
     let score = { base: 0, density: 0, bonus: 0, total: 0 };
     
-    const fName = Utils.val('f-name');
-    const fDesc = Utils.val('f-desc');
-    const fIns = Utils.val('f-ins');
-    const fCol = Utils.val('f-col');
-    const fCnt = Utils.val('f-cnt');
+    const fName = Utils.val('f-name'); const fDesc = Utils.val('f-desc');
+    const fIns = Utils.val('f-ins'); const fCol = Utils.val('f-col'); const fCnt = Utils.val('f-cnt');
 
-    // Points de base (existence)
     if(fName) score.base += 10;
     if(fDesc) score.base += 15;
     if(Utils.val('f-aud')) score.base += 10;
@@ -476,12 +461,9 @@ class Engine {
     if(fCol) score.base += 10;
     if(fCnt) score.base += 15;
 
-    // Analyse de densité (Longueur sémantique)
-    if(fDesc.length > 50) score.density += 10; // Bonne description
-    if(fIns.length > 40) score.density += 10; // Références solides
-    if(fCnt.length > 100) score.density += 15; // Vrai contenu fourni
-    
-    // Bonus spécifiques (Détection Hex)
+    if(fDesc.length > 50) score.density += 10;
+    if(fIns.length > 40) score.density += 10;
+    if(fCnt.length > 100) score.density += 15;
     if(Utils.extractHex(fCol).length > 0) score.bonus += 10;
 
     score.total = score.base + Math.min(score.density, 35) + Math.min(score.bonus, 10);
@@ -494,21 +476,21 @@ class Engine {
       const state = {
         name: Utils.val('f-name'), desc: Utils.val('f-desc'), aud: Utils.val('f-aud'), ko: Utils.val('f-ko'),
         ins: Utils.val('f-ins'), col: Utils.val('f-col'), av: Utils.val('f-av'), cnt: Utils.val('f-cnt'),
-        chips: [...document.querySelectorAll('.chip.sel')].map(c => ({g: c.dataset.g, t: c.textContent.replace('→ ', '').trim()}))
+        chips: [...document.querySelectorAll('.chip.sel')].map(c => ({g: c.dataset.g, t: c.textContent.replace('✓ ', '').trim()}))
       };
-      localStorage.setItem('ys-core-state', JSON.stringify(state));
+      localStorage.setItem('artsy-state', JSON.stringify(state));
     } catch(e){}
   }
 
   static restoreFromStorage() {
     try {
-      const s = JSON.parse(localStorage.getItem('ys-core-state'));
+      const s = JSON.parse(localStorage.getItem('artsy-state'));
       if(!s) return;
       const set = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
       set('f-name', s.name); set('f-desc', s.desc); set('f-aud', s.aud); set('f-ko', s.ko);
       set('f-ins', s.ins); set('f-col', s.col); set('f-av', s.av); set('f-cnt', s.cnt);
       (s.chips || []).forEach(({g, t}) => {
-        const chip = [...document.querySelectorAll(`.chip[data-g="${g}"]`)].find(c => c.textContent.replace('→ ', '').trim() === t);
+        const chip = [...document.querySelectorAll(`.chip[data-g="${g}"]`)].find(c => c.textContent.replace('✓ ', '').trim() === t);
         if(chip) chip.classList.add('sel');
       });
       UI.updateSwatches();
@@ -530,13 +512,10 @@ class Engine {
     const targetEl = document.getElementById('step-' + to);
     if(targetEl) targetEl.classList.add('active');
     
-    document.getElementById('wmark').textContent = Config.WMARKS[to] || '◆';
-    document.getElementById('wmark').style.opacity = to >= 5 ? '0' : '1';
-    
     const pct = Config.PPCTS[to] || 0;
-    document.getElementById('pbar').style.width = pct + '%';
-    document.getElementById('plabel').textContent = to <= 4 ? `ÉTAPE 0${to} / 04 — ${Config.PLABELS[to]}` : to === 5 ? '// INJECTION PRÊTE' : '';
-    document.getElementById('ppct').textContent = pct + '%';
+    if(document.getElementById('pbar')) document.getElementById('pbar').style.width = pct + '%';
+    if(document.getElementById('plabel')) document.getElementById('plabel').textContent = to <= 4 ? `0${to} — ${Config.PLABELS[to]}` : '';
+    if(document.getElementById('ppct')) document.getElementById('ppct').textContent = pct + '%';
     
     window.scrollTo({top: 0, behavior: 'smooth'});
   }
@@ -546,131 +525,110 @@ class Engine {
     document.querySelectorAll('input[type=text],textarea').forEach(e => e.value = '');
     document.getElementById('swatches').innerHTML = '';
     GlobalState.lastGeneratedPrompt = '';
-    try{ localStorage.removeItem('ys-core-state'); } catch(e){}
+    try{ localStorage.removeItem('artsy-state'); } catch(e){}
     this.evaluateState();
     this.navigate(5, 1);
   }
 }
 
-// ── 4. MOTEUR DE GÉNÉRATION (PROMPT COMPILER) ─────────────────
 class Generator {
   static async initiateSequence() {
     Engine.navigate(4, 'load');
     const loadEl = document.getElementById('step-load');
     loadEl.style.display = 'flex';
-    document.getElementById('wmark').style.opacity = '0';
     
-    // Reset loader UI
     ['ls1','ls2','ls3','ls4'].forEach(id => {
       const el = document.getElementById(id);
       el.className = 'load-step';
       el.querySelector('.load-icon').textContent = '○';
     });
-    document.getElementById('lbar').style.width = '0%';
 
-    // Animation de compilation artificielle (Feedback visuel sophistiqué)
-    const steps = [['ls1', 20], ['ls2', 50], ['ls3', 85], ['ls4', 98]];
+    const steps = ['ls1', 'ls2', 'ls3', 'ls4'];
     for(let i=0; i<steps.length; i++) {
       if(i > 0) {
-        const prev = document.getElementById(steps[i-1][0]);
+        const prev = document.getElementById(steps[i-1]);
         prev.className = 'load-step done';
         prev.querySelector('.load-icon').textContent = '✓';
       }
-      const cur = document.getElementById(steps[i][0]);
+      const cur = document.getElementById(steps[i]);
       cur.className = 'load-step running';
       cur.querySelector('.load-icon').innerHTML = '<span class="spin">◌</span>';
-      document.getElementById('lbar').style.width = steps[i][1] + '%';
       
-      // Temps de "réflexion" variable selon le score IQ du brief
-      const delay = Math.max(300, 1500 - (GlobalState.iqScore * 10)); 
-      await Utils.sleep(delay + (Math.random() * 400));
+      const delay = Math.max(300, 1200 - (GlobalState.iqScore * 8)); 
+      await Utils.sleep(delay + (Math.random() * 300));
     }
 
-    // Génération Locale Avancée du Prompt 
-    // (Remplace l'appel API client-side dangereux par une ingénierie de prompt template intelligente)
     const finalPrompt = this.buildMasterPrompt();
     GlobalState.lastGeneratedPrompt = finalPrompt;
 
-    // Finish loader
     document.getElementById('ls4').className = 'load-step done';
     document.getElementById('ls4').querySelector('.load-icon').textContent = '✓';
-    document.getElementById('lbar').style.width = '100%';
     await Utils.sleep(400);
 
-    // Show output
     loadEl.style.display = 'none';
     document.getElementById('step-5').classList.add('active');
-    document.getElementById('pbar').style.width = '100%';
-    document.getElementById('plabel').textContent = '// ARTEFACT COMPILÉ';
-    document.getElementById('ppct').textContent = '100%';
+    
+    if(document.getElementById('pbar')) document.getElementById('pbar').style.width = '100%';
+    if(document.getElementById('plabel')) document.getElementById('plabel').textContent = 'ARTEFACT GÉNÉRÉ';
+    if(document.getElementById('ppct')) document.getElementById('ppct').textContent = '100%';
     window.scrollTo({top: 0, behavior: 'smooth'});
     
     UI.typeWriterEffect(document.getElementById('out'), finalPrompt);
   }
 
   static buildMasterPrompt() {
-    // Extraction experte des données avec fallbacks intelligents
     const b = {
       nom: Utils.val('f-name') || '[Projet Inconnu]',
       desc: Utils.val('f-desc') || '[Application Web]',
-      aud: Utils.val('f-aud') || 'Utilisateurs du web modernes',
-      imp: Utils.sel('imp').join(', ') || 'Moderne, clair et efficace',
-      sty: Utils.sel('sty').join(', ') || 'Design Bootstrap/Tailwind standard',
-      kp: Utils.sel('kp').join(', ') || 'Structure HTML sémantique',
+      aud: Utils.val('f-aud') || 'Un public exigeant et esthète',
+      imp: Utils.sel('imp').join(', ') || 'Élégant, organique et structuré',
+      sty: Utils.sel('sty').join(', ') || 'Le syndrome du composant Bootstrap/Tailwind standardisé',
+      kp: Utils.sel('kp').join(', ') || 'Sémantique HTML',
       ko: Utils.val('f-ko'),
-      ins: Utils.val('f-ins') || 'Interface propre sans fioritures',
-      col: Utils.val('f-col') || 'Palette monochromatique contrastée',
-      av: Utils.val('f-av') || 'Clichés visuels, Dribbble effect',
-      cnt: Utils.val('f-cnt') || '[Générer des placeholders pertinents]',
-      lvl: Utils.sel('lvl')[0] || 'Audacieux (Nouveau paradigme visuel)'
+      ins: Utils.val('f-ins') || 'Design éditorial de type magazine (Kinfolk, Cereal)',
+      col: Utils.val('f-col') || 'Tons chauds, fonds cassés, contrastes doux',
+      av: Utils.val('f-av') || 'Bleus électriques, ombres agressives, pure black/pure white',
+      cnt: Utils.val('f-cnt') || '[Intégrer une copie textuelle riche et aérée]',
+      lvl: Utils.sel('lvl')[0] || 'Radicale (Reconstruction visuelle totale)'
     };
 
-    // Construction du template de Prompt ultra-complexe
-    return `[SYSTEM OVERRIDE : Rôle Expert UI/UX & CSS Architect]
-Tu vas agir comme un designer UI senior anti-conformiste spécialisé dans le CSS/HTML frontend.
-Ta mission est de refondre l'interface fournie sans tomber dans les clichés des designs "générés par IA".
+    return `[SYSTEM OVERRIDE : Rôle Designer "Artsy" & Frontend Artisan]
+Tu vas agir comme un designer UI senior spécialisé dans les interfaces éditoriales, organiques et élégantes (style "Awwwards" ou magazine digital). 
+Ta mission est de raffiner l'interface pour effacer toute trace d'un "générateur de code IA par défaut".
 
-# CONTEXTE DE L'APPLICATION
-- Nom du produit : ${b.nom}
-- Mission principale : ${b.desc}
-- Audience cible : ${b.aud}
-- Empreinte cognitive visée : ${b.imp}
+# 1. ÂME DU PROJET
+- Nom : ${b.nom}
+- Mission : ${b.desc}
+- Cible : ${b.aud}
+- Atmosphère : ${b.imp}
 
-# DIAGNOSTIC DE LA DETTE VISUELLE (À DÉTRUIRE)
-Le design actuel souffre des symptômes suivants : ${b.sty}.
-Ton but est de gommer complètement ces aspérités génériques.
+# 2. DIAGNOSTIC DU "SYNDROME IA" À GOMMER
+Actuellement, le design souffre de : ${b.sty}.
+Tu dois apporter une touche humaine, asymétrique ou éditoriale pour contrecarrer cela.
 
-# SANCTUAIRES TECHNIQUES (NE PAS TOUCHER)
-- Éléments à préserver : ${b.kp}
-${b.ko ? `- Contraintes absolues : ${b.ko}` : ''}
-Tu as carte blanche sur tout le reste (CSS, spacing, typographie, couleurs, structure visuelle fine).
+# 3. RÈGLES DE CONSERVATION (SANCTUAIRES)
+- Maintien obligatoire : ${b.kp}
+${b.ko ? `- Contrainte absolue : ${b.ko}` : ''}
 
-# INGÉNIERIE VISUELLE & INSPIRATION
+# 4. DIRECTION ARTISTIQUE & INSPIRATIONS
 - Vecteur esthétique : ${b.ins}
-- Palette de couleurs requise : ${b.col}
-- ATTENTION / LIGNE ROUGE : ${b.av}
+- Typographie : N'utilise SURTOUT PAS Inter ou Roboto. Propose un duo fort (ex: Serif élégant comme Fraunces/Playfair pour les titres, et un Sans-Serif doux comme DM Sans/Outfit pour le corps).
+- Palette chromatique : ${b.col}. Pense à des fonds beiges/crème, des accents terreux.
+- Ligne rouge absolue : ${b.av}.
 
-# INSTRUCTIONS DE COMPILATION
-1. N'utilise PAS les polices Inter ou Roboto. Propose des combinaisons typographiques (font-family) qui soutiennent le vecteur esthétique (ex: Space Grotesk, JetBrains Mono, serif élégantes selon le contexte).
-2. Applique un niveau de refonte : ${b.lvl}.
-3. Ajuste les espaces (paddings/margins) pour créer une vraie tension visuelle, loin des grilles Bootstrap monotones.
-4. Intègre le contenu réel suivant au lieu de générer du Lorem Ipsum :
+# 5. INSTRUCTIONS DE COMPILATION
+Profondeur de refonte demandée : ${b.lvl}.
+Génère le code CSS/HTML optimisé. Intègre ce texte réel pour calibrer tes espaces et ta typographie :
 """
 ${b.cnt}
 """
 
-# FORMAT DE SORTIE ATTENDU
-Ne rédige AUCUNE introduction ou conclusion polie. Commence directement par :
-1. Une brève "Auto-critique" (2 lignes) prouvant que tu as compris les clichés à éviter.
-2. Le code CSS/HTML optimisé (ou les recommandations d'architecture précises).`;
+Débute ta réponse directement par le code, sans introduction générique, en montrant par tes choix de variables CSS que tu as saisi l'esthétique Artsy/Éditoriale.`;
   }
 }
 
-// ── 5. INITIALISATION ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   Engine.restoreFromStorage();
-  
-  // Raccourcis clavier fluides
   document.addEventListener('keydown', e => {
     if(e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
       const active = document.querySelector('.step.active');
