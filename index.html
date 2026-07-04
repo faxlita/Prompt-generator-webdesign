@@ -10,7 +10,7 @@
 <style>
 :root {
   --bg-base: #F5F3EF;
-  --surface: rgba(255, 255, 255, 0.75); /* Flou réduit pour voir l'animation */
+  --surface: rgba(255, 255, 255, 0.75); 
   --surface-solid: #FFFFFF;
   --border: rgba(0, 0, 0, 0.08);
   --text-main: #2D2B2A;
@@ -43,135 +43,41 @@ body {
   transition: background-color 1s ease;
 }
 
-/* ── NOUVELLES ANIMATIONS BACKGROUND (Visibles & Géométriques) ── */
-.bg-animated {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  z-index: -1;
-  overflow: hidden;
-}
+/* ── ANIMATIONS BACKGROUND ── */
+.bg-animated { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; }
+.shape { position: absolute; opacity: 0.6; transition: background 1.5s ease, border-color 1.5s ease; }
+.shape-1 { width: 40vw; height: 40vw; border-radius: 50%; background: radial-gradient(circle, var(--c-3) 0%, transparent 70%); top: -10%; left: -5%; animation: float1 20s infinite alternate ease-in-out; }
+.shape-2 { width: 50vw; height: 50vw; border-radius: 50%; border: 2px solid var(--c-2); border-color: var(--c-2) transparent transparent transparent; bottom: -15%; right: -10%; animation: spin 30s infinite linear; }
+.shape-3 { width: 25vw; height: 25vw; background: var(--c-1); border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; top: 40%; left: 60%; opacity: 0.2; animation: morph 15s infinite alternate ease-in-out; }
 
-.shape {
-  position: absolute;
-  opacity: 0.6;
-  transition: background 1.5s ease, border-color 1.5s ease;
-}
+@keyframes float1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(8%, 12%) scale(1.1); } }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes morph { 0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; transform: rotate(0deg) translate(0, 0); } 100% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; transform: rotate(45deg) translate(-10%, 10%); } }
 
-/* Grand cercle qui respire */
-.shape-1 {
-  width: 40vw; height: 40vw;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--c-3) 0%, transparent 70%);
-  top: -10%; left: -5%;
-  animation: float1 20s infinite alternate ease-in-out;
-}
-
-/* Ligne arquée qui tourne */
-.shape-2 {
-  width: 50vw; height: 50vw;
-  border-radius: 50%;
-  border: 2px solid var(--c-2);
-  border-color: var(--c-2) transparent transparent transparent;
-  bottom: -15%; right: -10%;
-  animation: spin 30s infinite linear;
-}
-
-/* Forme abstraite géométrique (carré tournant) */
-.shape-3 {
-  width: 25vw; height: 25vw;
-  background: var(--c-1);
-  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-  top: 40%; left: 60%;
-  opacity: 0.2;
-  animation: morph 15s infinite alternate ease-in-out;
-}
-
-@keyframes float1 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(8%, 12%) scale(1.1); }
-}
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
-@keyframes morph {
-  0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; transform: rotate(0deg) translate(0, 0); }
-  100% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; transform: rotate(45deg) translate(-10%, 10%); }
-}
-
-.noise-overlay {
-  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
-  z-index: 0; pointer-events: none;
-}
+.noise-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E'); z-index: 0; pointer-events: none; }
 
 /* ── APP CONTAINER ── */
-.app-container {
-  width: 96vw; max-width: 1600px; height: 92vh;
-  background: var(--surface);
-  backdrop-filter: blur(12px); /* Flou réduit pour voir l'animation */
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: var(--r-lg);
-  box-shadow: 0 40px 100px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.6);
-  display: flex; position: relative; z-index: 10;
-  overflow: hidden;
-}
+.app-container { width: 96vw; max-width: 1600px; height: 92vh; background: var(--surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: var(--r-lg); box-shadow: 0 40px 100px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.6); display: flex; position: relative; z-index: 10; overflow: hidden; }
 
 /* ── SIDEBAR ── */
-.sidebar {
-  width: 80px;
-  background: rgba(255, 255, 255, 0.7);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; align-items: center;
-  padding: 2.5rem 0; gap: 2.5rem; z-index: 60;
-}
-.logo-mark {
-  width: 44px; height: 44px;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--text-main); border-radius: 50%;
-  font-family: var(--font-serif); font-size: 20px; font-weight: 600;
-  color: var(--text-main); cursor: pointer; transition: transform 0.4s;
-}
+.sidebar { width: 80px; background: rgba(255, 255, 255, 0.7); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 2.5rem 0; gap: 2.5rem; z-index: 60; }
+.logo-mark { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--text-main); border-radius: 50%; font-family: var(--font-serif); font-size: 20px; font-weight: 600; color: var(--text-main); cursor: pointer; transition: transform 0.4s; }
 .logo-mark:hover { transform: rotate(15deg); background: var(--text-main); color: #FFF; }
-
-.nav-icon {
-  width: 24px; height: 24px; color: var(--text-muted);
-  cursor: pointer; transition: var(--trans); position: relative;
-}
+.nav-icon { width: 24px; height: 24px; color: var(--text-muted); cursor: pointer; transition: var(--trans); position: relative; }
 .nav-icon:hover, .nav-icon.active { color: var(--text-main); }
-.nav-icon.active::after {
-  content: ''; position: absolute; right: -28px; top: 50%;
-  transform: translateY(-50%); width: 3px; height: 24px;
-  background: var(--text-main); border-radius: 3px 0 0 3px;
-}
+.nav-icon.active::after { content: ''; position: absolute; right: -28px; top: 50%; transform: translateY(-50%); width: 3px; height: 24px; background: var(--text-main); border-radius: 3px 0 0 3px; }
 
 /* ── PANELS ── */
-.panel {
-  position: absolute; left: 80px; top: 0;
-  width: 340px; height: 100%;
-  background: var(--surface-solid);
-  border-right: 1px solid var(--border);
-  z-index: 50; padding: 3rem 2rem;
-  transform: translateX(-100%); opacity: 0; pointer-events: none;
-  transition: var(--trans);
-  box-shadow: 20px 0 40px rgba(0,0,0,0.03);
-}
+.panel { position: absolute; left: 80px; top: 0; width: 340px; height: 100%; background: var(--surface-solid); border-right: 1px solid var(--border); z-index: 50; padding: 3rem 2rem; transform: translateX(-100%); opacity: 0; pointer-events: none; transition: var(--trans); box-shadow: 20px 0 40px rgba(0,0,0,0.03); }
 .panel.open { transform: translateX(0); opacity: 1; pointer-events: auto; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
 .panel-title { font-family: var(--font-serif); font-size: 22px; color: var(--text-main); }
 .close-btn { background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; }
-
-.theme-option {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; border-radius: var(--r-md);
-  border: 1px solid var(--border); cursor: pointer;
-  transition: var(--trans); margin-bottom: 12px;
-}
+.theme-option { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--r-md); border: 1px solid var(--border); cursor: pointer; transition: var(--trans); margin-bottom: 12px; }
 .theme-option:hover { border-color: var(--text-muted); }
 .theme-option.active { border-color: var(--text-main); background: rgba(0,0,0,0.02); }
 .theme-dots { display: flex; gap: 4px; }
 .tdot { width: 12px; height: 12px; border-radius: 50%; }
-
 .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .setting-label { font-size: 13px; font-weight: 500; }
 .toggle { width: 40px; height: 22px; background: var(--c-1); border-radius: 20px; position: relative; cursor: pointer; transition: background 0.3s; }
@@ -182,82 +88,58 @@ body {
 
 /* ── MAIN CONTENT ── */
 .main { flex: 1; display: flex; flex-direction: column; }
-.topbar {
-  height: 80px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 3.5rem; background: rgba(255,255,255,0.2);
-}
+.topbar { height: 80px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 3.5rem; background: rgba(255,255,255,0.2); }
 .breadcrumbs { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
 
-.scroll-area { flex: 1; overflow-y: auto; padding: 4rem 3.5rem; }
+.scroll-area { flex: 1; overflow-y: auto; padding: 4rem 3.5rem; position: relative; }
 .scroll-area::-webkit-scrollbar { width: 5px; }
 .scroll-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+/* ── STEPS LOGIC ── */
+.step { display: none; animation: fadeUp 0.4s ease forwards; }
+.step.active { display: block; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
 .hero-title { font-family: var(--font-serif); font-size: 48px; font-weight: 500; margin-bottom: 10px; }
 .hero-sub { font-size: 15px; color: var(--text-muted); margin-bottom: 3.5rem; max-width: 500px; line-height: 1.6; }
 
 .field { margin-bottom: 2.5rem; max-width: 680px; }
 label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
-input, textarea {
-  width: 100%; font-family: var(--font-sans); font-size: 15px; color: var(--text-main);
-  background: rgba(255,255,255,0.7); border: 1px solid var(--border);
-  border-radius: var(--r-md); padding: 16px 20px; outline: none; transition: var(--trans);
-}
+input, textarea { width: 100%; font-family: var(--font-sans); font-size: 15px; color: var(--text-main); background: rgba(255,255,255,0.7); border: 1px solid var(--border); border-radius: var(--r-md); padding: 16px 20px; outline: none; transition: var(--trans); }
 input:focus, textarea:focus { background: #FFF; border-color: var(--text-main); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
 textarea { min-height: 100px; resize: vertical; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip {
-  padding: 10px 20px; border-radius: var(--r-pill); border: 1px solid var(--border);
-  font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: var(--trans);
-}
+.chip { padding: 10px 20px; border-radius: var(--r-pill); border: 1px solid var(--border); font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: var(--trans); }
 .chip:hover { border-color: var(--text-main); color: var(--text-main); }
 .chip.sel { background: var(--text-main); color: #FFF; border-color: var(--text-main); }
 
-/* ── MOODBOARD ── */
-.moodboard {
-  width: 420px; background: rgba(255,255,255,0.8);
-  border-left: 1px solid var(--border); padding: 3.5rem 2.5rem;
-  display: flex; flex-direction: column; gap: 2.5rem;
-}
-.mb-header { font-family: var(--font-serif); font-size: 22px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+/* Navigation des étapes */
+.step-nav { display: flex; justify-content: space-between; align-items: center; max-width: 680px; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+.btn-next { background: var(--text-main); color: #FFF; padding: 14px 28px; border-radius: var(--r-pill); border: none; font-weight: 500; font-family: var(--font-sans); cursor: pointer; transition: var(--trans); display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
+.btn-next:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); background: #000; }
+.btn-prev { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 14px 24px; border-radius: var(--r-pill); font-weight: 500; font-family: var(--font-sans); cursor: pointer; transition: var(--trans); display: inline-flex; align-items: center; gap: 8px; }
+.btn-prev:hover { border-color: var(--text-main); color: var(--text-main); }
 
+/* ── MOODBOARD ── */
+.moodboard { width: 420px; background: rgba(255,255,255,0.8); border-left: 1px solid var(--border); padding: 3.5rem 2.5rem; display: flex; flex-direction: column; gap: 2.5rem; }
+.mb-header { font-family: var(--font-serif); font-size: 22px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
 .mb-card { background: #FFF; border-radius: var(--r-md); padding: 25px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.02); min-height: 140px; }
 .mb-proj-name { font-family: var(--font-serif); font-size: 24px; margin-bottom: 10px; color: var(--text-main); }
 .mb-proj-desc { font-size: 13px; line-height: 1.6; color: var(--text-muted); }
-
 .mb-colors { display: flex; gap: 15px; margin-top: 15px; }
 .mb-color-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .mb-circle { width: 50px; height: 50px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: background 1s ease; }
 .mb-hex { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
-
 .typo-preview { font-family: var(--font-serif); font-size: 18px; font-style: italic; line-height: 1.5; color: var(--text-main); border-left: 2px solid var(--c-2); padding-left: 15px; transition: border-color 1s ease; }
-
 .mb-actions { margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--border); }
-.btn-generate {
-  width: 100%; background: var(--text-main); color: #FFF;
-  padding: 18px; border: none; border-radius: var(--r-pill);
-  font-family: var(--font-sans); font-size: 14px; font-weight: 500;
-  cursor: pointer; transition: var(--trans);
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-}
+.btn-generate { width: 100%; background: var(--text-main); color: #FFF; padding: 18px; border: none; border-radius: var(--r-pill); font-family: var(--font-sans); font-size: 14px; font-weight: 500; cursor: pointer; transition: var(--trans); display: flex; align-items: center; justify-content: center; gap: 10px; }
 .btn-generate:hover { background: #000; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
-.btn-generate:disabled { opacity: 0.5; pointer-events: none; }
 
 /* ── MODAL OUTPUT ── */
-.modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.4s;
-}
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.4s; }
 .modal-overlay.active { opacity: 1; pointer-events: auto; }
-.modal-content {
-  background: var(--surface-solid); width: 90%; max-width: 800px;
-  border-radius: var(--r-lg); padding: 3rem;
-  transform: translateY(30px); transition: transform 0.4s;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.2);
-}
+.modal-content { background: var(--surface-solid); width: 90%; max-width: 800px; border-radius: var(--r-lg); padding: 3rem; transform: translateY(30px); transition: transform 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.2); }
 .modal-overlay.active .modal-content { transform: translateY(0); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .shell { background: #FAF9F7; border: 1px solid var(--border); border-radius: var(--r-md); padding: 1.5rem; overflow-y: auto; max-height: 50vh; font-family: var(--font-mono); font-size: 12px; line-height: 1.7; white-space: pre-wrap; }
@@ -280,15 +162,12 @@ svg.ic { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; fil
 
   <aside class="sidebar">
     <div class="logo-mark" onclick="location.reload()" title="Reset">YS</div>
-    
     <div class="nav-icon active" id="nav-brief" onclick="UI.togglePanel(null, 'nav-brief')" title="Briefing">
       <svg class="ic" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
     </div>
-    
     <div class="nav-icon" id="nav-palette" onclick="UI.togglePanel('panel-palette', 'nav-palette')" title="Palettes & Themes">
       <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
     </div>
-
     <div class="nav-icon" id="nav-settings" onclick="UI.togglePanel('panel-settings', 'nav-settings')" title="Paramètres" style="margin-top: auto;">
       <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </div>
@@ -323,39 +202,92 @@ svg.ic { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; fil
 
   <main class="main">
     <div class="topbar">
-      <span class="breadcrumbs">WORKSPACE / CURATED_MINIMAL</span>
+      <span class="breadcrumbs" id="bc-text">WORKSPACE / CURATED_MINIMAL / ÉTAPE 1 SUR 3</span>
       <span style="font-family:var(--font-serif); font-size:14px; font-style:italic; color:var(--text-muted)">Drafting...</span>
     </div>
 
     <div class="scroll-area">
-      <h1 class="hero-title">Identity Brief</h1>
-      <p class="hero-sub">Fournissez la substance de votre projet. L'algorithme se chargera d'en extraire un prompt d'ingénierie inverse pour échapper aux standards de l'IA.</p>
+      
+      <div id="step-1" class="step active">
+        <h1 class="hero-title">Identity Brief</h1>
+        <p class="hero-sub">Étape 01 — Fournissez la substance de votre projet. L'algorithme en extraira l'âme visuelle.</p>
 
-      <div class="field">
-        <label>Nom de l'œuvre / produit</label>
-        <input type="text" id="f-name" placeholder="Ex: Galerie Monochrome, Studio Koto..." oninput="Engine.updateLive()">
-      </div>
+        <div class="field">
+          <label>Nom de l'œuvre / produit</label>
+          <input type="text" id="f-name" placeholder="Ex: Galerie Monochrome, Studio Koto..." oninput="Engine.updateLive()">
+        </div>
 
-      <div class="field">
-        <label>Essence (en une phrase)</label>
-        <input type="text" id="f-desc" placeholder="Ex: Un portfolio pour architectes d'intérieur." oninput="Engine.updateLive()">
-      </div>
+        <div class="field">
+          <label>Essence (en une phrase)</label>
+          <input type="text" id="f-desc" placeholder="Ex: Un portfolio pour architectes d'intérieur." oninput="Engine.updateLive()">
+        </div>
 
-      <div class="field">
-        <label>Vecteur Émotionnel</label>
-        <div class="chips">
-          <div class="chip" onclick="UI.toggleChip(this)">Organique</div>
-          <div class="chip" onclick="UI.toggleChip(this)">Brutaliste</div>
-          <div class="chip" onclick="UI.toggleChip(this)">Éditorial</div>
-          <div class="chip" onclick="UI.toggleChip(this)">Silencieux</div>
-          <div class="chip" onclick="UI.toggleChip(this)">Technique</div>
+        <div class="field">
+          <label>Vecteur Émotionnel</label>
+          <div class="chips">
+            <div class="chip" onclick="UI.toggleChip(this)">Organique</div>
+            <div class="chip" onclick="UI.toggleChip(this)">Brutaliste</div>
+            <div class="chip" onclick="UI.toggleChip(this)">Éditorial</div>
+            <div class="chip" onclick="UI.toggleChip(this)">Silencieux</div>
+            <div class="chip" onclick="UI.toggleChip(this)">Technique</div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-next" onclick="Engine.goToStep(2)">
+            Suivant <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
         </div>
       </div>
 
-      <div class="field">
-        <label>Échantillon Textuel (Copie Réelle)</label>
-        <textarea id="f-text" placeholder="Collez ici les vrais titres de votre site. Le design éditorial réagit au contenu." oninput="Engine.updateLive()"></textarea>
+      <div id="step-2" class="step">
+        <h1 class="hero-title">Dette Visuelle</h1>
+        <p class="hero-sub">Étape 02 — Identifions les clichés à fuir et les fondations à préserver.</p>
+
+        <div class="field">
+          <label>Symptômes à gommer (Anti-Pattern)</label>
+          <input type="text" id="f-avoid" placeholder="Ex: Boutons immenses, ombres portées intenses, polices arrondies..." oninput="Engine.updateLive()">
+        </div>
+
+        <div class="field">
+          <label>Sanctuaires (Ce qu'il faut garder)</label>
+          <div class="chips">
+            <div class="chip" onclick="UI.toggleChip(this, true)">Structure HTML</div>
+            <div class="chip" onclick="UI.toggleChip(this, true)">Accessibilité ARIA</div>
+            <div class="chip" onclick="UI.toggleChip(this, true)">Logique JS</div>
+            <div class="chip" onclick="UI.toggleChip(this, true)">Logo SVG</div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-prev" onclick="Engine.goToStep(1)">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Précédent
+          </button>
+          <button class="btn-next" onclick="Engine.goToStep(3)">
+            Suivant <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
       </div>
+
+      <div id="step-3" class="step">
+        <h1 class="hero-title">Matière Brute</h1>
+        <p class="hero-sub">Étape 03 — Le design réagit au texte. L'IA a besoin de vos vrais mots pour calibrer la typographie.</p>
+
+        <div class="field">
+          <label>Échantillon Textuel (Copie Réelle)</label>
+          <textarea id="f-text" style="min-height: 180px;" placeholder="Collez ici le H1 de votre page d'accueil, un paragraphe de description et le texte d'un bouton principal..." oninput="Engine.updateLive()"></textarea>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-prev" onclick="Engine.goToStep(2)">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Précédent
+          </button>
+          <button class="btn-next" onclick="Generator.compile()">
+            Générer l'Artefact <svg class="ic" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L19 10l-5.1 1.2L12 17l-1.9-5.8L5 10l5.1-1.2Z"/></svg>
+          </button>
+        </div>
+      </div>
+
     </div>
   </main>
 
@@ -432,7 +364,7 @@ const UI = {
   togglePanel(panelId, iconId) {
     this.closePanels();
     document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
-    document.getElementById(iconId).classList.add('active');
+    if(iconId) document.getElementById(iconId).classList.add('active');
     
     if (panelId) {
       document.getElementById(panelId).classList.add('open');
@@ -443,9 +375,9 @@ const UI = {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('open'));
   },
 
-  toggleChip(el) {
+  toggleChip(el, isConstraint = false) {
     el.classList.toggle('sel');
-    Engine.updateLive();
+    if(!isConstraint) Engine.updateLive(); // On ne met à jour le moodboard qu'avec les chips émotionnels
   },
 
   renderThemeList() {
@@ -474,7 +406,7 @@ const UI = {
     
     if(id === 'tokyo' || id === 'mono') {
       root.style.setProperty('--text-main', '#FFFFFF');
-      root.style.setProperty('--surface', 'rgba(30, 30, 30, 0.7)');
+      root.style.setProperty('--surface', 'rgba(30, 30, 30, 0.6)');
       root.style.setProperty('--surface-solid', '#1A1A1A');
       root.style.setProperty('--border', 'rgba(255, 255, 255, 0.1)');
     } else {
@@ -506,10 +438,18 @@ const UI = {
 };
 
 const Engine = {
+  goToStep(stepNum) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + stepNum).classList.add('active');
+    document.getElementById('bc-text').textContent = `WORKSPACE / CURATED_MINIMAL / ÉTAPE ${stepNum} SUR 3`;
+    document.querySelector('.scroll-area').scrollTop = 0;
+  },
+
   updateLive() {
     const name = document.getElementById('f-name').value;
     const desc = document.getElementById('f-desc').value;
-    const chips = [...document.querySelectorAll('.chip.sel')].map(c => c.textContent);
+    // On ne prend que les chips de la première étape pour le moodboard émotionnel
+    const chips = [...document.getElementById('step-1').querySelectorAll('.chip.sel')].map(c => c.textContent);
     
     const lname = document.getElementById('l-name');
     const ldesc = document.getElementById('l-desc');
@@ -528,6 +468,7 @@ const Engine = {
 const Generator = {
   async compile() {
     const btn = document.getElementById('btn-gen');
+    const originalText = btn.innerHTML;
     btn.innerHTML = 'Compilation...';
     btn.disabled = true;
 
@@ -535,17 +476,23 @@ const Generator = {
 
     const name = document.getElementById('f-name').value || 'Projet Minimal';
     const desc = document.getElementById('f-desc').value || 'Une interface épurée et intentionnelle.';
-    const chips = [...document.querySelectorAll('.chip.sel')].map(c => c.textContent).join(', ') || 'Minimaliste';
+    const chips = [...document.getElementById('step-1').querySelectorAll('.chip.sel')].map(c => c.textContent).join(', ') || 'Minimaliste';
+    const avoid = document.getElementById('f-avoid').value || 'Design Bootstrap classique, ombres excessives';
+    const keep = [...document.getElementById('step-2').querySelectorAll('.chip.sel')].map(c => c.textContent).join(', ') || 'Aucune contrainte spécifique';
     const text = document.getElementById('f-text').value || '[Insérer le contenu réel ici]';
 
     generatedPrompt = `[SYSTEM OVERRIDE : Rôle Designer Éditorial Senior]
 Agis comme un architecte d'interface UI/UX spécialisé dans le design minimaliste et "Artsy".
-Refonde le code existant en rejetant formellement l'esthétique générique des IA (Bootstrap, ombres énormes, Inter partout).
+Refonde le code existant en rejetant formellement l'esthétique générique des IA.
 
 # CONTEXTE & ÂME
 - Projet : ${name}
 - Essence : ${desc}
 - Émotion visée : ${chips}
+
+# DETTE VISUELLE (À GOMMER)
+- À éviter absolument : ${avoid}
+- Sanctuaires techniques à préserver : ${keep}
 
 # DIRECTIVES VISUELLES (THEME: ${currentTheme.name})
 - Couleurs primaires : ${currentTheme.c1}, ${currentTheme.c2}, ${currentTheme.c3}
@@ -560,7 +507,7 @@ ${text}
 
 Renvoie uniquement le code HTML/CSS propre et optimisé. Aucun texte d'introduction.`;
 
-    btn.innerHTML = `Compiler l'Artefact <svg class="ic" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+    btn.innerHTML = originalText;
     btn.disabled = false;
     
     UI.openModal();
