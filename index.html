@@ -42,15 +42,56 @@ body{font-family:var(--font-sans);background-color:var(--bg-base);color:var(--te
 .nav-icon.active::after{content:'';position:absolute;right:-28px;top:50%;transform:translateY(-50%);width:3px;height:24px;background:var(--text-main);border-radius:3px 0 0 3px}
 
 /* PANELS */
-.panel{position:absolute;left:80px;top:0;width:340px;height:100%;background:var(--surface-solid);border-right:1px solid var(--border);z-index:50;padding:3rem 2rem;transform:translateX(-100%);opacity:0;pointer-events:none;transition:var(--trans);box-shadow:20px 0 40px rgba(0,0,0,0.03)}
+.panel{position:absolute;left:80px;top:0;width:340px;height:100%;background:var(--surface-solid);border-right:1px solid var(--border);z-index:50;padding:3rem 2rem;transform:translateX(-100%);opacity:0;pointer-events:none;transition:var(--trans);box-shadow:20px 0 40px rgba(0,0,0,0.03);overflow-y:auto}
 .panel.open{transform:translateX(0);opacity:1;pointer-events:auto}
-.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:2.5rem}
+#panel-palette{width:440px;padding:2.5rem 2rem}
+#panel-palette::-webkit-scrollbar{width:4px}
+#panel-palette::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:10px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
 .panel-title{font-family:var(--font-serif);font-size:22px;color:var(--text-main)}
-.close-btn{background:none;border:none;font-size:24px;color:var(--text-muted);cursor:pointer}
-.theme-option{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--r-md);border:1px solid var(--border);cursor:pointer;transition:var(--trans);margin-bottom:12px}
-.theme-option:hover{border-color:var(--text-muted)}
-.theme-option.active{border-color:var(--text-main);background:rgba(0,0,0,0.02)}
-.theme-dots{display:flex;gap:4px}
+.panel-subtitle{font-size:12px;color:var(--text-muted);margin-bottom:1.75rem;line-height:1.5}
+.close-btn{background:none;border:none;font-size:24px;color:var(--text-muted);cursor:pointer;flex-shrink:0}
+/* THEME CARDS */
+.theme-card{border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:var(--trans);margin-bottom:16px;position:relative}
+.theme-card:hover{border-color:var(--text-muted);transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.08)}
+.theme-card.active{border-color:var(--text-main);box-shadow:0 0 0 2px var(--text-main)}
+.tc-check{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--text-main);display:none;align-items:center;justify-content:center;z-index:2}
+.tc-check svg{width:12px;height:12px;stroke:#fff;stroke-width:2.5;fill:none}
+.theme-card.active .tc-check{display:flex}
+/* Mini preview */
+.tc-preview{height:110px;display:flex;overflow:hidden;position:relative}
+.tp-sidebar{width:20px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:5px}
+.tp-logo{width:12px;height:12px;border-radius:50%;border-width:1px;border-style:solid}
+.tp-nav{width:8px;height:8px;border-radius:2px;margin-top:2px}
+.tp-nav-sm{width:8px;height:5px;border-radius:1px;opacity:.5}
+.tp-main{flex:1;display:flex;flex-direction:column;padding:0}
+.tp-topbar{height:18px;flex-shrink:0;display:flex;align-items:center;padding:0 8px;border-bottom-width:1px;border-bottom-style:solid}
+.tp-topbar-line{height:3px;border-radius:1px;width:35%}
+.tp-body{flex:1;padding:8px 10px;display:flex;flex-direction:column;gap:5px}
+.tp-h1{height:9px;border-radius:2px;width:75%}
+.tp-h2{height:6px;border-radius:1px;width:50%;opacity:.5}
+.tp-chips{display:flex;gap:4px;margin-top:2px}
+.tp-chip-a{height:14px;width:36px;border-radius:7px}
+.tp-chip-b{height:14px;width:28px;border-radius:7px;border-width:1px;border-style:solid}
+.tp-btn{height:14px;width:60px;border-radius:7px;margin-top:auto}
+.tp-mood{width:56px;flex-shrink:0;display:flex;flex-direction:column;padding:10px 8px;gap:6px;border-left-width:1px;border-left-style:solid}
+.tp-mood-lbl{height:4px;border-radius:1px;width:70%;opacity:.4}
+.tp-circles{display:flex;gap:3px}
+.tp-circle{width:13px;height:13px;border-radius:50%}
+.tp-swatch{flex:1;border-radius:4px;border-left-width:2px;border-left-style:solid;min-height:18px}
+/* Theme meta */
+.tc-meta{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;background:var(--surface-solid)}
+.tc-name{font-size:13px;font-weight:600;color:var(--text-main)}
+.tc-desc{font-size:11px;color:var(--text-muted);margin-top:2px}
+.tc-swatches{display:flex;gap:5px;align-items:center}
+.tc-dot{width:14px;height:14px;border-radius:50%}
+/* Settings */
+.setting-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+.setting-label{font-size:13px;font-weight:500}
+.toggle{width:40px;height:22px;background:var(--c-1);border-radius:20px;position:relative;cursor:pointer;transition:background 0.3s}
+.toggle::after{content:'';position:absolute;left:2px;top:2px;width:18px;height:18px;background:#FFF;border-radius:50%;transition:transform 0.3s}
+.toggle.off{background:var(--border)}
+.toggle.off::after{transform:translateX(0)}
 .tdot{width:12px;height:12px;border-radius:50%}
 .setting-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
 .setting-label{font-size:13px;font-weight:500}
@@ -205,8 +246,8 @@ svg.ic-sm{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;st
 
   <div id="panel-palette" class="panel">
     <div class="panel-head"><h3 class="panel-title">Curated Palettes</h3><button class="close-btn" onclick="UI.closePanels()">&times;</button></div>
+    <p class="panel-subtitle">Sélectionne une ambiance visuelle. Elle s'intègre directement dans le prompt généré par Claude et oriente la direction chromatique.</p>
     <div id="theme-list"></div>
-    <p style="font-size:11px;color:var(--text-muted);margin-top:1rem;font-family:var(--font-mono);letter-spacing:.04em">La palette s'intègre dans le prompt généré par Claude.</p>
   </div>
 
   <div id="panel-settings" class="panel">
@@ -370,11 +411,11 @@ svg.ic-sm{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;st
 <script>
 // ─── THEMES ────────────────────────────────────────
 const themes=[
-  {id:'artsy',name:'Artsy Analog',c1:'#A09689',c2:'#D2B095',c3:'#E6D8D2',bg:'#F5F3EF',dark:false},
-  {id:'tokyo',name:'Tokyo Night',c1:'#7AA2F7',c2:'#BB9AF7',c3:'#2AC3DE',bg:'#1A1B26',dark:true},
-  {id:'nordic',name:'Nordic Frost',c1:'#81A1C1',c2:'#88C0D0',c3:'#E5E9F0',bg:'#ECEFF4',dark:false},
-  {id:'desert',name:'Desert Solace',c1:'#E29578',c2:'#FFDDD2',c3:'#006D77',bg:'#FAEDCD',dark:false},
-  {id:'mono',name:'Carbon Mono',c1:'#555555',c2:'#888888',c3:'#CCCCCC',bg:'#111111',dark:true}
+  {id:'artsy',name:'Artsy Analog',desc:'Crème chaleureux, matière naturelle, intemporel',c1:'#A09689',c2:'#D2B095',c3:'#E6D8D2',bg:'#F5F3EF',dark:false},
+  {id:'tokyo',name:'Tokyo Night',desc:'Dark profond, néon éditorial, cyberpunk doux',c1:'#7AA2F7',c2:'#BB9AF7',c3:'#2AC3DE',bg:'#1A1B26',dark:true},
+  {id:'nordic',name:'Nordic Frost',desc:'Bleu glacé, scandinave, espace & lumière',c1:'#81A1C1',c2:'#88C0D0',c3:'#E5E9F0',bg:'#ECEFF4',dark:false},
+  {id:'desert',name:'Desert Solace',desc:'Terre cuite douce, organique, méditerranéen',c1:'#E29578',c2:'#FFDDD2',c3:'#006D77',bg:'#FAEDCD',dark:false},
+  {id:'mono',name:'Carbon Mono',desc:'Gris acier, brutaliste technique, industriel',c1:'#555555',c2:'#888888',c3:'#CCCCCC',bg:'#111111',dark:true}
 ];
 
 // ─── STATE ─────────────────────────────────────────
@@ -445,15 +486,66 @@ const UI={
   tc(el){const g=el.parentElement;g.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');App.onInput()},
   tm(el){el.classList.toggle('sel');App.onInput()},
   renderThemeList(){
-    document.getElementById('theme-list').innerHTML=themes.map(t=>`
-      <div class="theme-option ${t.id===State.theme.id?'active':''}" onclick="UI.applyTheme('${t.id}')">
-        <div class="theme-dots">
-          <div class="tdot" style="background:${t.c1}"></div>
-          <div class="tdot" style="background:${t.c2}"></div>
-          <div class="tdot" style="background:${t.c3}"></div>
+    document.getElementById('theme-list').innerHTML=themes.map(t=>this.themeCard(t)).join('');
+  },
+
+  themeCard(t){
+    const isDark=t.dark;
+    const tx=isDark?'rgba(255,255,255,0.9)':'rgba(45,43,42,0.9)';
+    const txm=isDark?'rgba(255,255,255,0.25)':'rgba(45,43,42,0.18)';
+    const surf=isDark?'rgba(255,255,255,0.04)':'rgba(255,255,255,0.85)';
+    const bd=isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.07)';
+    const active=t.id===State.theme.id;
+    return`<div class="theme-card${active?' active':''}" onclick="UI.applyTheme('${t.id}')">
+      <div class="tc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="tc-preview" style="background:${t.bg}">
+        <!-- Sidebar -->
+        <div class="tp-sidebar" style="background:${surf};border-right:1px solid ${bd}">
+          <div class="tp-logo" style="border-color:${t.c1};background:none"></div>
+          <div class="tp-nav" style="background:${t.c1};opacity:.7"></div>
+          <div class="tp-nav-sm" style="background:${tx}"></div>
+          <div class="tp-nav-sm" style="background:${tx}"></div>
         </div>
-        <span style="font-size:13px;font-weight:500">${t.name}</span>
-      </div>`).join('');
+        <!-- Main -->
+        <div class="tp-main">
+          <div class="tp-topbar" style="background:${surf};border-bottom-color:${bd}">
+            <div class="tp-topbar-line" style="background:${txm}"></div>
+          </div>
+          <div class="tp-body">
+            <div class="tp-h1" style="background:${tx}"></div>
+            <div class="tp-h2" style="background:${tx}"></div>
+            <div class="tp-chips">
+              <div class="tp-chip-a" style="background:${tx}"></div>
+              <div class="tp-chip-b" style="border-color:${bd};background:none"></div>
+              <div class="tp-chip-b" style="border-color:${bd};background:none"></div>
+            </div>
+            <div class="tp-btn" style="background:${t.c1};margin-top:8px"></div>
+          </div>
+        </div>
+        <!-- Moodboard -->
+        <div class="tp-mood" style="background:${surf};border-left-color:${bd}">
+          <div class="tp-mood-lbl" style="background:${tx}"></div>
+          <div class="tp-circles">
+            <div class="tp-circle" style="background:${t.c1}"></div>
+            <div class="tp-circle" style="background:${t.c2}"></div>
+            <div class="tp-circle" style="background:${t.c3}"></div>
+          </div>
+          <div class="tp-swatch" style="background:${bd};border-left-color:${t.c2}"></div>
+        </div>
+      </div>
+      <!-- Meta -->
+      <div class="tc-meta" style="background:${t.bg};border-top:1px solid ${bd}">
+        <div>
+          <div class="tc-name" style="color:${tx}">${t.name}</div>
+          <div class="tc-desc" style="color:${isDark?'rgba(255,255,255,0.4)':'rgba(45,43,42,0.45)'}">${t.desc}</div>
+        </div>
+        <div class="tc-swatches">
+          <div class="tc-dot" style="background:${t.c1}"></div>
+          <div class="tc-dot" style="background:${t.c2}"></div>
+          <div class="tc-dot" style="background:${t.c3}"></div>
+        </div>
+      </div>
+    </div>`;
   },
   applyTheme(id){
     State.theme=themes.find(t=>t.id===id);
@@ -484,7 +576,8 @@ const UI={
       document.getElementById('mh-'+i).textContent=State.theme['c'+i];
     });
     document.getElementById('l-typo').style.borderColor=State.theme.c2;
-    this.closePanels();
+    this.renderThemeList(); // refresh active state on cards
+    setTimeout(()=>this.closePanels(), 320);
   },
   openModal(){document.getElementById('result-modal').classList.add('active')},
   closeModal(){document.getElementById('result-modal').classList.remove('active')}
