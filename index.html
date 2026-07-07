@@ -421,11 +421,10 @@ const themes=[
 // ─── STATE ─────────────────────────────────────────
 const State={
   theme:themes[0],
-  history:[],   // Claude conversation for refinement
   lastPrompt:'',
+  currentBrief:null,
   step:1,
   moodDebounce:null,
-  suggDebounce:null
 };
 
 // ══════════════════════════════════════════════════
@@ -984,18 +983,14 @@ const App={
     else{pip.style.background='#22c55e';txt.textContent=`Brief ${pct}% — excellent`}
   },
 
-  async fetchDirectionInsight(name,desc,chips){
+  fetchDirectionInsight(name,desc,chips){
     const insight=document.getElementById('direction-insight');
-    if(!name&&!desc)return;
-    insight.innerHTML='<div class="direction-thinking"><span class="spin" style="display:inline-block;animation:spin 1s linear infinite">◌</span>&nbsp;analyse…</div>';
-    try{
-      const res=await quickAPI(
-        [{role:'user',content:`Produit: ${name||'?'}. ${desc||''}. Émotion: ${chips.join(', ')||'non précisée'}.`}],
-        `Tu es directeur artistique. En exactement une phrase de 15 mots maximum, en français, décris la direction typographique précise et singulière qui conviendrait à ce produit. Cite 1-2 polices précises. Sois poétique et concret.`,
-        80
-      );
-      insight.textContent=res.trim();
-    }catch(e){insight.textContent=''}
+    if(!name&&!desc){insight.textContent='';return}
+    insight.textContent='';
+    // Simule une micro-latence pour l'effet "calcul en cours"
+    setTimeout(()=>{
+      insight.textContent=Algo.insightLine(name,desc,chips);
+    },320);
   },
 
   goStep(from,to){
@@ -1008,32 +1003,24 @@ const App={
     if(from===1&&to===2)this.suggestChips();
   },
 
-  async suggestChips(){
+  suggestChips(){
     const name=v('f-name'),desc=v('f-desc');
     if(!name&&!desc)return;
     const hint=document.getElementById('sugg-hint');
-    document.getElementById('sugg-txt').textContent='Claude identifie les vecteurs émotionnels…';
+    document.getElementById('sugg-txt').textContent='Analyse du profil…';
     hint.classList.add('show');
-    try{
-      const res=await quickAPI(
-        [{role:'user',content:`Produit: ${name}. Description: ${desc}.`}],
-        `Tu es directeur artistique. Analyse ce produit et retourne EXACTEMENT en JSON strict (aucun autre texte) les vecteurs émotionnels qui correspondent le mieux, choisis parmi: "Organique", "Brutaliste", "Éditorial", "Silencieux", "Technique". Format: {"suggestions":["Éditorial","Silencieux"]} (1-2 suggestions max).`,
-        80
-      );
-      const clean=res.replace(/```json|```/g,'').trim();
-      const parsed=JSON.parse(clean);
-      const suggs=parsed.suggestions||[];
+    setTimeout(()=>{
+      const suggs=Algo.suggestVectors(name,desc);
       document.querySelectorAll('#emotion-chips .chip').forEach(chip=>{
         chip.classList.remove('suggested');
-        if(suggs.some(s=>chip.textContent.replace('IA','').trim().startsWith(s.trim()))){
-          chip.classList.add('suggested');
-        }
+        const label=chip.textContent.replace('IA','').trim();
+        if(suggs.includes(label))chip.classList.add('suggested');
       });
       if(suggs.length>0){
-        document.getElementById('sugg-txt').textContent=`Suggestion : ${suggs.join(' · ')}`;
-        setTimeout(()=>hint.classList.remove('show'),5000);
+        document.getElementById('sugg-txt').textContent=`Vecteurs détectés : ${suggs.join(' · ')}`;
+        setTimeout(()=>hint.classList.remove('show'),4500);
       }else{hint.classList.remove('show')}
-    }catch(e){hint.classList.remove('show')}
+    },280);
   },
 
   autosave(){
@@ -1061,7 +1048,7 @@ const App={
     document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel','suggested'));
     document.querySelectorAll('input[type=text],textarea').forEach(e=>e.value='');
     try{localStorage.removeItem('ys-studio')}catch(e){}
-    State.history=[];State.lastPrompt='';
+    State.lastPrompt='';State.currentBrief=null;
     this.updateLive();this.updateScore();
     this.goStep(State.step,1);
     document.getElementById('direction-insight').textContent='';
@@ -1071,130 +1058,88 @@ const App={
 
 // ─── GENERATOR ─────────────────────────────────────
 const Generator={
-  SYS:`Tu es directeur artistique senior d'un studio reconnu pour produire des identités visuelles impossibles à confondre avec du générique IA.
-
-Pour chaque brief tu analyses d'abord ce qui rend CE projet unique (pas ce qu'une app similaire ferait), puis tu rédiges un prompt de refonte visuelle en français qui :
-• Nomme des polices réelles et précises (ex: "Sohne", "Canela", "Space Grotesk") jamais génériques
-• Propose 4-6 couleurs hex nommées adaptées à CE projet
-• Nomme explicitement les 3 "looks IA par défaut" à éviter (crème+serif, noir+acide, journal+filets)
-• Définit UN "geste signature" mémorable propre au projet
-• Est structuré avec des séparateurs ─── et sections en majuscules
-
-Tu réponds UNIQUEMENT avec le prompt, sans introduction ni commentaire.`,
 
   buildBrief(){
-    const t=State.theme;
-    return`Brief de refonte visuelle :
-Projet : ${v('f-name')||'[Non précisé]'}
-Essence : ${v('f-desc')||'[Non précisée]'}
-Vecteur émotionnel : ${selChips('emotion-chips').join(', ')||'Non précisé'}
-Anti-patterns à gommer : ${v('f-avoid')||'Non précisé'}
-Sanctuaires à préserver : ${selAll('.step:nth-of-type(2) .chip.sel').map(c=>c.textContent.replace('IA','')).join(', ')||'Aucun'}
-Copie textuelle réelle : ${v('f-text')||'Non fournie'}
-Palette de studio sélectionnée : ${t.name} — ${t.c1}, ${t.c2}, ${t.c3} sur fond ${t.bg}
-
-Rédige un prompt de refonte complet et précis que l'utilisateur enverra à Claude avec son code. Chaque décision doit être ancrée dans CE brief. Inclus : palette hex sur mesure (4-6 couleurs), noms de polices réels, geste signature unique.`;
+    return{
+      name:    v('f-name')||'[Non précisé]',
+      desc:    v('f-desc')||'[Non précisée]',
+      audience:v('f-aud')||'',
+      emotion: selChips('emotion-chips').join(', '),
+      avoid:   v('f-avoid')||'',
+      keep:    [...document.querySelectorAll('#step-2 .chip.sel')].map(c=>c.textContent.replace('IA','')).join(', '),
+      content: v('f-text')||'',
+      level:   'Refonte totale',
+    };
   },
 
-  async compile(){
+  compile(){
     const brief=this.buildBrief();
-    State.history=[{role:'user',content:brief}];
+    State.currentBrief=brief;
     const btn=document.getElementById('btn-gen');
     btn.disabled=true;
     btn.textContent='Compilation…';
-    // Open modal with loading state
-    document.getElementById('out-text').innerHTML='<div class="shell-loading"><span class="spin" style="display:inline-block;animation:spin 1s linear infinite">◌</span>&nbsp;Claude rédige en direct…</div>';
+    const shell=document.getElementById('out-text');
+    shell.innerHTML='<div class="shell-loading"><span class="spin" style="display:inline-block;animation:spin 1s linear infinite;margin-right:8px">◌</span>Algorithme en cours · '+brief.name+'…</div>';
     document.getElementById('refine-zone').classList.remove('show');
     document.getElementById('chat-log').innerHTML='';
     UI.openModal();
-
-    let fullText='';
-    let firstChunk=true;
-
-    streamAPI(
-      State.history,
-      this.SYS,
-      chunk=>{
-        if(firstChunk){document.getElementById('out-text').textContent='';firstChunk=false}
-        fullText+=chunk;
-        State.lastPrompt=fullText;
-        const el=document.getElementById('out-text');
-        el.textContent=fullText;
-        el.scrollTop=el.scrollHeight;
-      },
-      ()=>{
-        State.lastPrompt=fullText;
-        State.history.push({role:'assistant',content:fullText});
-        this.highlight(document.getElementById('out-text'),fullText);
+    setTimeout(()=>{
+      const prompt=Algo.generate(brief,State.theme);
+      State.lastPrompt=prompt;
+      this.typewrite(shell,prompt,()=>{
+        this.highlight(shell,prompt);
         document.getElementById('refine-zone').classList.add('show');
         btn.disabled=false;
         btn.innerHTML='Compiler l\'Artefact <svg class="ic" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
         App.autosave();
-      },
-      err=>{
-        document.getElementById('out-text').textContent='Erreur : '+err.message;
-        btn.disabled=false;
-        btn.innerHTML='Compiler l\'Artefact';
-      }
-    );
+      });
+    },480);
   },
 
-  async refine(){
+  refine(){
     const inp=document.getElementById('refine-inp');
     const req=inp.value.trim();
-    if(!req||!State.history.length)return;
+    if(!req||!State.lastPrompt)return;
     inp.value='';
     const send=document.getElementById('refine-send');
     send.disabled=true;
     const log=document.getElementById('chat-log');
-
-    // User bubble
     const um=document.createElement('div');
     um.className='cmsg user';
     um.innerHTML=`<div class="cav">U</div><div class="cbubble">${esc(req)}</div>`;
     log.appendChild(um);log.scrollTop=log.scrollHeight;
-
-    // Thinking
     const tm=document.createElement('div');
     tm.className='cmsg ai';
-    tm.innerHTML='<div class="cav">AI</div><div class="cbubble"><div class="tdots"><span>·</span><span>·</span><span>·</span></div></div>';
+    tm.innerHTML='<div class="cav">A</div><div class="cbubble"><div class="tdots"><span>·</span><span>·</span><span>·</span></div></div>';
     log.appendChild(tm);log.scrollTop=log.scrollHeight;
-
-    const refineMsg=`Demande de modification : "${req}"\n\nRéécris le prompt complet en intégrant cette modification. Conserve tout ce qui fonctionnait. Réponds UNIQUEMENT avec le prompt révisé complet.`;
-    const msgs=[...State.history,{role:'user',content:refineMsg}];
-    let newText='';
-
-    streamAPI(
-      msgs,this.SYS,
-      chunk=>{
-        newText+=chunk;
-        State.lastPrompt=newText;
-        const el=document.getElementById('out-text');
-        el.textContent=newText;
-        el.scrollTop=el.scrollHeight;
-      },
-      ()=>{
-        tm.remove();
-        const am=document.createElement('div');
-        am.className='cmsg ai';
-        am.innerHTML='<div class="cav">AI</div><div class="cbubble">Prompt mis à jour ✓</div>';
-        log.appendChild(am);log.scrollTop=log.scrollHeight;
-        State.history.push({role:'user',content:refineMsg});
-        State.history.push({role:'assistant',content:newText});
-        State.lastPrompt=newText;
-        setTimeout(()=>this.highlight(document.getElementById('out-text'),newText),200);
+    setTimeout(()=>{
+      const brief=State.currentBrief||this.buildBrief();
+      const newPrompt=Algo.refine(State.lastPrompt,req,brief,State.theme);
+      State.lastPrompt=newPrompt;
+      tm.remove();
+      const am=document.createElement('div');
+      am.className='cmsg ai';
+      const kw=Object.keys(Algo.MODS).find(k=>req.toLowerCase().includes(k));
+      am.innerHTML=`<div class="cav">A</div><div class="cbubble">Profil recalculé${kw?' ('+kw+')':''} — prompt mis à jour ✓</div>`;
+      log.appendChild(am);log.scrollTop=log.scrollHeight;
+      const shell=document.getElementById('out-text');
+      this.typewrite(shell,newPrompt,()=>{
+        this.highlight(shell,newPrompt);
         send.disabled=false;
         inp.focus();
-      },
-      err=>{
-        tm.remove();
-        const em=document.createElement('div');
-        em.className='cmsg ai';
-        em.innerHTML=`<div class="cav">AI</div><div class="cbubble" style="color:#ef4444">Erreur: ${esc(err.message)}</div>`;
-        log.appendChild(em);
-        send.disabled=false;
-      }
-    );
+      });
+    },420);
+  },
+
+  typewrite(el,text,onDone){
+    el.textContent='';
+    let i=0;
+    const speed=text.length>1200?2:4;
+    function tick(){
+      if(i<text.length){el.textContent+=text.slice(i,i+5);i+=5;el.scrollTop=el.scrollHeight;setTimeout(tick,speed)}
+      else{el.textContent=text;if(onDone)onDone()}
+    }
+    tick();
   },
 
   highlight(el,text){
