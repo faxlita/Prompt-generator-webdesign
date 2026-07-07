@@ -428,50 +428,412 @@ const State={
   suggDebounce:null
 };
 
-// ─── STREAMING ─────────────────────────────────────
-async function streamAPI(messages,system,onChunk,onDone,onError){
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,stream:true,system,messages})
-    });
-    if(!res.ok)throw new Error(`HTTP ${res.status}`);
-    const reader=res.body.getReader();
-    const dec=new TextDecoder();
-    let buf='';
-    while(true){
-      const{done,value}=await reader.read();
-      if(done)break;
-      buf+=dec.decode(value,{stream:true});
-      const lines=buf.split('\n');
-      buf=lines.pop()||'';
-      for(const line of lines){
-        if(!line.startsWith('data: '))continue;
-        const data=line.slice(6).trim();
-        if(data==='[DONE]'){onDone();return}
-        try{
-          const p=JSON.parse(data);
-          if(p.type==='content_block_delta'&&p.delta?.type==='text_delta')onChunk(p.delta.text);
-          if(p.type==='message_stop'){onDone();return}
-        }catch(e){}
-      }
-    }
-    onDone();
-  }catch(e){onError(e)}
-}
+// ══════════════════════════════════════════════════
+// ALGO — Moteur algorithmique autonome
+// Zéro dépendance externe. Zéro appel réseau.
+// ══════════════════════════════════════════════════
+const Algo={
 
-// Quick non-streaming call (for suggestions / insights)
-async function quickAPI(messages,system,maxTokens=200){
-  const res=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,system,messages})
-  });
-  if(!res.ok)throw new Error(`HTTP ${res.status}`);
-  const d=await res.json();
-  return d.content?.filter(b=>b.type==='text').map(b=>b.text).join('')||'';
-}
+// ─── BASE DE DONNÉES TYPOGRAPHIQUE (30 paires) ───
+TYPO:[
+ {d:'Canela',b:'Neue Haas Grotesk',sc:{wa:6,co:8,ed:10,te:3,lu:9,or:3,br:1,mi:7},why:'Tension entre grâce serif et rigueur grotesque — signature éditoriale premium'},
+ {d:'Freight Display',b:'Calibre',sc:{wa:7,co:6,ed:9,te:2,lu:8,or:5,br:1,mi:6},why:'Chaleur humaniste contre clarté contemporaine — équilibre littéraire'},
+ {d:'Cormorant Garamond',b:'Aktiv Grotesk',sc:{wa:8,co:7,ed:9,te:2,lu:10,or:6,br:1,mi:5},why:'Garamond intemporel contre modernité — luxe sans arrogance'},
+ {d:'GT Sectra',b:'ABC Diatype',sc:{wa:4,co:9,ed:10,te:5,lu:7,or:2,br:3,mi:8},why:'Tranchant éditorial suisse — contemporain sans compromis'},
+ {d:'Domaine Display',b:'Graphik',sc:{wa:5,co:7,ed:8,te:4,lu:8,or:3,br:2,mi:7},why:'Prestige discret contre efficacité — premium fonctionnel'},
+ {d:'Space Grotesk',b:'Inter',sc:{wa:3,co:7,ed:4,te:9,lu:3,or:2,br:5,mi:6},why:'Géométrie techno — interface SaaS avec caractère propre'},
+ {d:'Acumin Pro',b:'Space Grotesk',m:'JetBrains Mono',sc:{wa:2,co:9,ed:3,te:10,lu:2,or:1,br:7,mi:5},why:'Système typographique dense et technique — précision maximale'},
+ {d:'Styrene A',b:"Suisse Int'l",sc:{wa:2,co:10,ed:5,te:8,lu:4,or:1,br:9,mi:6},why:'Brutalisme assumé — tension maximale sans sacrifier la lisibilité'},
+ {d:'Favorit',b:'Favorit Mono',sc:{wa:3,co:6,ed:6,te:8,lu:5,or:2,br:6,mi:9},why:'Famille unique — cohérence absolue, système monolithique'},
+ {d:'Sohne',b:'Sohne Buch',m:'Sohne Mono',sc:{wa:4,co:7,ed:6,te:9,lu:6,or:2,br:5,mi:8},why:'Robustesse germanique — clarté sans personnalité forcée'},
+ {d:'Playfair Display',b:'Source Sans Pro',sc:{wa:8,co:8,ed:9,te:1,lu:7,or:7,br:1,mi:4},why:'Dramatisme classique contre modernité accessible — chaleur éditoriale'},
+ {d:'Recoleta',b:'DM Sans',sc:{wa:10,co:5,ed:7,te:1,lu:6,or:9,br:1,mi:3},why:'Rétro-organique contre contemporain — chaleur et profondeur'},
+ {d:'Neue Haas Unica',b:'Neue Haas Unica',sc:{wa:3,co:5,ed:7,te:7,lu:7,or:1,br:3,mi:10},why:'Minimalisme suisse pur — le silence typographique comme identité'},
+ {d:'Monument Extended',b:'Inter',sc:{wa:1,co:10,ed:4,te:8,lu:5,or:1,br:10,mi:5},why:'Impact frontal pur — présence brute, aucun compromis'},
+ {d:'Ogg',b:'Helvetica Now',sc:{wa:6,co:7,ed:9,te:3,lu:9,or:5,br:2,mi:7},why:'Élégance sensuelle contre clarté universelle — luxe démocratique'},
+ {d:'Tiempos Headline',b:'National 2',sc:{wa:6,co:7,ed:10,te:2,lu:7,or:5,br:2,mi:6},why:'Journalisme de qualité — précision éditoriale contemporaine'},
+ {d:'Druk Wide',b:'Akkurat',sc:{wa:2,co:10,ed:3,te:7,lu:4,or:1,br:10,mi:4},why:'Masse compressée contre neutralité — impact frontal sans ornement'},
+ {d:'Cardinal Fruit',b:'Söhne Buch',sc:{wa:9,co:6,ed:8,te:2,lu:8,or:8,br:1,mi:4},why:'Organique chaleureux contre ancrage solide — artisanat premium'},
+ {d:'Editorial New',b:"Suisse Int'l",sc:{wa:4,co:8,ed:10,te:5,lu:8,or:3,br:3,mi:7},why:'Italique tranchant contre neutralité — magazine contemporain haut de gamme'},
+ {d:'Fraunces',b:'Plus Jakarta Sans',sc:{wa:9,co:6,ed:8,te:2,lu:7,or:8,br:1,mi:4},why:'Vivacité expressive contre fonctionnalité — personnalité forte'},
+ {d:'GT Alpina',b:'GT America',sc:{wa:5,co:8,ed:9,te:4,lu:8,or:4,br:2,mi:7},why:'Famille GT complète — cohérence typographique suisse premium'},
+ {d:'Migra',b:'Neue Montreal',sc:{wa:4,co:9,ed:9,te:4,lu:8,or:3,br:4,mi:7},why:'Italique de haute couture — tension éditoriale maximale'},
+ {d:'Cabinet Grotesk',b:'Satoshi',sc:{wa:5,co:7,ed:6,te:7,lu:5,or:3,br:5,mi:6},why:'Géométrie moderne contre neutralité — tech accessible'},
+ {d:'Roslindale',b:'DM Mono',sc:{wa:7,co:6,ed:8,te:5,lu:6,or:6,br:2,mi:6},why:'Chaleur organique contre précision utilitaire — artisanat numérique'},
+ {d:'Swear Display',b:'Roobert',sc:{wa:7,co:7,ed:8,te:3,lu:7,or:6,br:2,mi:5},why:'Organicité expressive contre ancrage contemporain — douceur avec caractère'},
+ {d:'Chillax',b:'General Sans',sc:{wa:8,co:5,ed:6,te:3,lu:5,or:8,br:1,mi:5},why:'Fluidité douce contre stabilité — mouvement et équilibre'},
+ {d:'Cirka',b:'Neue Haas Grotesk',sc:{wa:6,co:8,ed:8,te:3,lu:8,or:5,br:2,mi:6},why:'Texture luxueuse contre rigueur — prestige profond'},
+ {d:'Noe Display',b:'Noe Text',sc:{wa:5,co:8,ed:9,te:2,lu:8,or:4,br:2,mi:6},why:'Famille éditoriale complète — cohérence du titre au corps'},
+ {d:'Geist',b:'Geist Mono',m:'Geist Mono',sc:{wa:2,co:6,ed:5,te:10,lu:4,or:1,br:6,mi:9},why:'Esthétique développeur — cohérence système, Vercel DNA'},
+ {d:'Lexend Zetta',b:'DM Sans',sc:{wa:4,co:7,ed:4,te:8,lu:3,or:2,br:7,mi:6},why:'Impact condensé contre lisibilité — densité technique affirmée'},
+],
+
+// ─── BASE DE DONNÉES GESTES SIGNATURE (30 gestes) ─
+GESTURES:[
+ {g:'Un seul mot du titre en taille extrême (clamp(80px,15vw,200px)) qui déborde volontairement du viewport — le cadrage devient la signature',sc:{co:9,br:8,ed:7,mi:5},dom:['art','tech','agence']},
+ {g:'Curseur personnalisé qui change de forme selon la zone : cercle plein sur surface sombre, cercle creux sur surface claire — dualité constante',sc:{lu:8,ed:8,co:7,or:5},dom:['art','luxe','agence']},
+ {g:'Compteur qui défile rapidement avant de se stabiliser sur la valeur finale (scroll-triggered) — les chiffres comme révélation',sc:{te:9,co:7,br:5,mi:6},dom:['tech','saas','finance']},
+ {g:'Numéros de section en 130px, opacity 0.04, position absolute derrière le contenu — architecture révélée en filigrane',sc:{mi:9,ed:9,lu:7,or:3},dom:['art','luxe','editorial']},
+ {g:'Ligne de progression horizontale 1px en position sticky top:0 — seul élément chromatique sur fond neutre, tension maximale',sc:{mi:10,te:7,br:6,co:8},dom:['tech','saas','tool']},
+ {g:'Cards avec clip-path diagonal au hover — le contenu caché se révèle par un masque en biseau',sc:{ed:9,lu:8,co:8,or:5},dom:['art','luxe','portfolio']},
+ {g:'Grille de points SVG en background, déplacement subtil suivant le curseur (parallax 0.02) — texture vivante',sc:{or:7,te:8,mi:7,co:5},dom:['tech','saas','art']},
+ {g:'Transition entre sections par une ligne qui se déplace verticalement et révèle le contenu suivant — wipe cinématographique',sc:{ed:10,lu:9,co:8,br:4},dom:['luxe','art','portfolio']},
+ {g:'Logo en caractères isolés qui s\'animent individuellement au hover avec stagger 40ms — désintégration contrôlée',sc:{br:7,te:7,co:9,ed:7},dom:['art','tech','agence']},
+ {g:'Couleur d\'accent qui pulse à 5% d\'opacité sur 3s en continu — battement cardiaque numérique, invisible à moins d\'y prêter attention',sc:{or:9,wa:8,lu:7,mi:6},dom:['art','luxe','wellness']},
+ {g:'Font-weight variable du hero qui transite de 100 à 900 au scroll (font-variation-settings) — la typographie seule comme animation',sc:{mi:9,ed:9,te:6,br:5},dom:['art','portfolio','editorial']},
+ {g:'Effet magnétique : les CTAs attirent le curseur dans un rayon de 80px, déformation douce — pesanteur numérique',sc:{lu:9,ed:8,or:6,co:7},dom:['luxe','art','agence']},
+ {g:'Fond qui transite de teinte en teinte entre les sections via background-color en sticky — le scroll comme peinture',sc:{or:9,wa:8,ed:8,lu:7},dom:['art','wellness','luxe']},
+ {g:'Images en grayscale par défaut, couleur révélée uniquement au hover — les photographies qui reprennent vie',sc:{mi:9,ed:9,co:9,lu:8},dom:['photo','portfolio','art']},
+ {g:'Un seul CTA en couleur vive dans une interface entièrement monochromatique — la rupture unique et assumée',sc:{mi:10,co:10,br:7,te:7},dom:['saas','tech','tool']},
+ {g:'Écran de chargement en font-mono qui simule un flux de données avant révélation — esthétique terminal assumée',sc:{te:10,br:8,co:7,mi:7},dom:['tech','dev','tool']},
+ {g:'Navigation réduite à un seul tiret en position fixe — menu invisible jusqu\'à l\'interaction, minimalisme extrême',sc:{mi:10,lu:9,ed:8,br:4},dom:['luxe','portfolio','art']},
+ {g:'Rotation 3D subtile au hover sur les cards (rotateX:4deg rotateY:8deg, perspective:1000px) — profondeur sans excès',sc:{lu:8,or:6,co:7,ed:6},dom:['saas','product','luxe']},
+ {g:'Texte hero en mix-blend-mode:difference sur une image — le contenu interfère avec le visuel, tension graphique pure',sc:{br:9,co:10,ed:8,or:7},dom:['art','photo','agence']},
+ {g:'Grille CSS visible à opacity:0.04 en fond — le papier millimétré comme infrastructure révélée',sc:{te:9,br:8,mi:8,co:6},dom:['tech','design','editorial']},
+ {g:'Footer encyclopédique dense comme une une de journal — toute l\'information condensée, typographie serrée, aucun espace perdu',sc:{ed:10,br:7,te:7,mi:6},dom:['editorial','art','luxe']},
+ {g:'Mode sombre/clair déclenché par un circle-expand depuis la position du toggle — l\'UI s\'allume depuis un point',sc:{te:8,co:8,lu:7,br:6},dom:['app','saas','tool']},
+ {g:'Pull-quotes avec guillemet décoratif 180px à opacity:0.06 — la citation comme élément architectural',sc:{ed:10,wa:8,lu:8,mi:7},dom:['editorial','luxe','art']},
+ {g:'Révélation d\'image au scroll via clip-path:inset(100% 0 0) → inset(0%) — les visuels émergent littéralement du sol',sc:{lu:9,ed:9,or:7,co:7},dom:['photo','luxe','portfolio']},
+ {g:'Fraction typographiée en position fixe (01/07) — navigation éditoriale, lecture comme expérience maîtrisée',sc:{ed:10,mi:9,lu:8,te:6},dom:['editorial','art','photo']},
+ {g:'Séquence d\'images en masonry auto-grid sans espace — densité assumée, la grille comme texture',sc:{br:8,te:7,co:7,or:6},dom:['photo','ecom','portfolio']},
+ {g:'Texte de navigation en position sticky qui se transforme en titre de section courante (intersection observer)',sc:{te:8,ed:8,mi:7,lu:6},dom:['editorial','saas','doc']},
+ {g:'Barre de couleur verticale de 2px à gauche de chaque section — identité par accumulation de lignes',sc:{br:7,te:8,mi:8,co:7},dom:['tech','editorial','saas']},
+ {g:'Effet split-view draggable en hero — avant/après séparés par une ligne interactive, démo vivante du produit',sc:{co:9,te:8,br:7,ed:7},dom:['saas','product','portfolio']},
+ {g:'Skeleton loader stylisé qui persiste 300ms même quand le contenu est prêt — l\'attente comme esthétique',sc:{te:9,mi:8,br:6,co:6},dom:['app','saas','tech']},
+],
+
+// ─── TEMPLATES DE PHRASES (4-6 variantes par slot) ─
+T:{
+ open:[
+  'Je veux que tu retravailles le design visuel de cette application. Le code est intact — tu interviens uniquement sur l\'identité visuelle.',
+  'Refonte visuelle totale. La logique fonctionne — ton intervention est exclusivement esthétique et identitaire.',
+  'Mission : transformer l\'apparence de cette app. Fonctionnalités préservées — identité à construire de zéro.',
+  'Retravaille ce design en profondeur. Aucune modification fonctionnelle — seulement la surface visuelle.',
+ ],
+ product_intro:[
+  'Ce produit s\'appelle {name}. {desc}',
+  '{name} : {desc}',
+  'Le projet — {name}. En une phrase : {desc}',
+  'Nom : {name}. Essence : {desc}',
+ ],
+ audience:[
+  'Sa cible : {aud}.',
+  'Il s\'adresse à {aud}.',
+  'Audience principale : {aud}.',
+  'Les utilisateurs : {aud}.',
+ ],
+ emotion_intro:[
+  'L\'impression visuelle recherchée : {emotion}.',
+  'Vecteur émotionnel : {emotion}.',
+  'Ce que l\'utilisateur doit ressentir : {emotion}.',
+  'Le design doit dégager : {emotion}.',
+ ],
+ problem_intro:[
+  'Le style actuel souffre d\'un look générique — immédiatement reconnaissable comme produit par une IA sans contexte.',
+  'Problème : le design actuel pourrait appartenir à n\'importe quelle app. Cette refonte doit rompre radicalement avec ça.',
+  'Le design actuel est interchangeable et prévisible. L\'objectif : une identité qu\'on ne peut pas confondre avec une autre.',
+  'Actuellement, le style est générique. Ce qu\'on veut : une signature visuelle qui appartient exclusivement à ce produit.',
+ ],
+ avoid_pfx:['À fuir absolument :','Rejette formellement :','Interdits de reproduction :','Clichés à éradiquer :'],
+ keep_pfx:['À préserver impérativement :','Sanctuaires techniques :','Garder intact :','Fondations à respecter :'],
+ typo_intro:['Typographie — colonne vertébrale de l\'identité :','Direction typographique :','Architecture typographique — choix non négociables :','La typographie porte toute la personnalité :'],
+ color_intro:['Palette chromatique — chaque teinte a un rôle précis :','Système de couleurs :','Direction chromatique :','Palette — aucune couleur n\'est arbitraire :'],
+ gesture_intro:['Geste signature — ce qu\'on retient :','L\'élément différenciant — l\'inimitable :','Signature visuelle :','Le geste identitaire :'],
+ instr_pfx:['CE QUE JE VEUX QUE TU FASSES','INSTRUCTIONS D\'EXÉCUTION','PROCESSUS ATTENDU','MÉTHODE'],
+},
+
+// ─── CLASSIFICATION DOMAINES ────────────────────
+DOMAINS:{
+ tech:    ['app','tool','saas','platform','dashboard','api','software','dev','code','interface','système','gestion','workflow','automatisation'],
+ art:     ['gallery','galerie','studio','portfolio','design','creative','art','photo','illustration','visuel','graphisme','créatif'],
+ luxe:    ['luxe','premium','exclusive','haute','couture','prestige','raffiné','élégant','maison','collection','artisan'],
+ editorial:['magazine','journal','blog','article','media','news','publication','édito','revue','contenu','newsletter'],
+ wellness:['santé','wellness','yoga','méditation','coach','bien-être','fitness','sport','nutrition','mindfulness'],
+ food:    ['restaurant','café','food','cuisine','chef','menu','recette','gastronomie','culinaire','traiteur','boulangerie'],
+ ecom:    ['boutique','shop','store','produit','achat','commerce','vente','collection','catalogue','panier'],
+ edu:     ['formation','cours','apprendre','éducation','certification','tutoriel','enseignement','apprentissage'],
+ finance: ['finance','banque','investissement','budget','comptabilité','facture','paiement','économie','trading'],
+ agence:  ['agence','créatif','branding','identité','communication','marketing','campagne','publicité','stratégie'],
+},
+
+// ─── MODIFICATEURS D'AFFINAGE ───────────────────
+MODS:{
+ 'austère':    {br:+2,mi:+2,wa:-2,or:-2,lu:+1},
+ 'minimaliste':{mi:+3,br:+1,or:-2,wa:-1,co:-1},
+ 'luxueux':    {lu:+3,wa:+1,co:+2,br:-2,te:-1},
+ 'brutal':     {br:+4,co:+3,mi:-1,lu:-3,wa:-2},
+ 'organique':  {or:+3,wa:+2,br:-3,te:-1,mi:-1},
+ 'sombre':     {co:+3,br:+2,wa:-3,mi:+1},
+ 'éditorial':  {ed:+3,mi:+2,lu:+1,co:+1},
+ 'technique':  {te:+3,br:+1,or:-2,wa:-2,mi:+1},
+ 'chaleureux': {wa:+3,or:+2,mi:-1,br:-2,co:-1},
+ 'épuré':      {mi:+4,co:-1,or:-2,br:-1,wa:-1},
+ 'contrasté':  {co:+4,br:+2,mi:+1,wa:-1,or:-1},
+ 'discret':    {mi:+3,co:-2,br:-3,wa:+1,lu:+2},
+ 'premium':    {lu:+4,co:+2,mi:+2,br:-2,wa:+1},
+ 'dynamique':  {co:+2,or:+2,br:+2,mi:-2,wa:+1},
+ 'poétique':   {wa:+2,or:+3,ed:+2,br:-3,mi:+1},
+},
+
+// ─── UTILITAIRES ────────────────────────────────
+hash(s){let h=0;for(let i=0;i<s.length;i++)h=Math.imul(31,h)+s.charCodeAt(i)|0;return Math.abs(h)},
+lcg(seed){return((seed*1664525+1013904223)&0x7fffffff)},
+rng(seed,n){return this.lcg(this.hash(String(seed)))%n},
+pick(arr,tag){return arr[this.rng(tag+arr.length,arr.length)]},
+
+cosineSim(a,b){
+ const k=Object.keys(a);
+ const dot=k.reduce((s,x)=>s+(a[x]||0)*(b[x]||0),0);
+ const ma=Math.sqrt(k.reduce((s,x)=>s+(a[x]||0)**2,0));
+ const mb=Math.sqrt(k.reduce((s,x)=>s+(b[x]||0)**2,0));
+ return ma&&mb?dot/(ma*mb):0;
+},
+
+shiftHex(hex,amt){
+ const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+ const c=v=>Math.max(0,Math.min(255,v+amt));
+ return'#'+[c(r),c(g),c(b)].map(v=>v.toString(16).padStart(2,'0')).join('');
+},
+
+// ─── ANALYSE ────────────────────────────────────
+detectDomain(text){
+ const t=(text||'').toLowerCase();
+ const sc={};
+ for(const[d,kw] of Object.entries(this.DOMAINS))sc[d]=kw.filter(k=>t.includes(k)).length;
+ const top=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+ return top[0][1]>0?top[0][0]:'tech';
+},
+
+buildScoreVec(vectors,domain){
+ const base={wa:5,co:5,ed:5,te:5,lu:5,or:5,br:5,mi:5};
+ const domAdj={
+  tech:    {te:3,br:1,mi:1,wa:-1,lu:-1,or:-1},
+  art:     {ed:3,lu:2,or:2,te:-1,mi:1},
+  luxe:    {lu:4,mi:2,ed:2,wa:1,br:-2,te:-1},
+  editorial:{ed:4,mi:2,lu:1,or:1},
+  wellness:{wa:4,or:3,mi:2,lu:1,te:-2,br:-2},
+  food:    {wa:3,or:3,lu:1,ed:1,te:-1,br:-1},
+  ecom:    {lu:2,co:2,te:1,mi:1,ed:1},
+  edu:     {te:2,mi:2,wa:1,co:1,ed:1},
+  finance: {te:3,mi:2,co:2,lu:1,wa:-1,or:-1},
+  agence:  {ed:3,co:3,lu:2,br:1,or:1},
+ };
+ for(const[k,v] of Object.entries(domAdj[domain]||{}))base[k]=Math.max(0,Math.min(10,base[k]+v));
+ const vecAdj={
+  'Organique':   {or:3,wa:2,mi:-1,br:-2},
+  'Brutaliste':  {br:4,co:3,mi:-1,lu:-2,wa:-2},
+  'Éditorial':   {ed:4,mi:2,lu:1,co:1},
+  'Silencieux':  {mi:4,wa:1,br:-3,co:-1},
+  'Technique':   {te:4,co:2,br:1,wa:-1,or:-2},
+ };
+ for(const v of (vectors||[])){
+  for(const[k,dv] of Object.entries(vecAdj[v]||{}))base[k]=Math.max(0,Math.min(10,base[k]+dv));
+ }
+ return base;
+},
+
+// ─── SÉLECTION ──────────────────────────────────
+selectTypo(sv,seed){
+ const scored=this.TYPO.map(t=>({...t,sim:this.cosineSim(sv,t.sc)}));
+ scored.sort((a,b)=>b.sim-a.sim);
+ return scored[this.rng(seed+'typo',Math.min(3,scored.length))];
+},
+
+selectGesture(sv,domain,seed){
+ const pool=this.GESTURES.filter(g=>!g.dom||g.dom.includes(domain));
+ const src=pool.length>=4?pool:this.GESTURES;
+ const scored=src.map(g=>({...g,sim:this.cosineSim(sv,g.sc)}));
+ scored.sort((a,b)=>b.sim-a.sim);
+ return scored[this.rng(seed+'gest',Math.min(4,scored.length))];
+},
+
+buildPalette(theme,sv,seed){
+ const{c1,c2,c3,bg}=theme;
+ return[
+  {hex:bg,    role:'Fond principal',      note:sv.mi>7?'— respiration maximale':'— surface de repos'},
+  {hex:c3,    role:'Surface secondaire',  note:'— cards, panels, élévation 1'},
+  {hex:this.shiftHex(bg,sv.dark?8:-6),role:'Bordures & séparateurs',note:'— structure invisible'},
+  {hex:c1,    role:'Texte & structure',   note:'— corps, titres, éléments UI'},
+  {hex:c2,    role:'Accent principal',    note:sv.co>7?'— utilisé avec parcimonie':'— couleur d\'accentuation dosée'},
+  {hex:this.shiftHex(c2,sv.br>6?-30:20),role:'Accent interactif',note:'— hover, focus, states actifs'},
+ ];
+},
+
+selectAntiPatterns(sv){
+ const all=[
+  {l:'Fond crème + serif + accent terracotta',w:sv.wa*sv.lu},
+  {l:'Fond noir absolu + accent vert acide ou rouge vif',w:sv.co*sv.br},
+  {l:'Mise en page "journal" + filets partout + Inter seul',w:sv.ed*sv.te},
+  {l:'Bleu #3B82F6 générique + boutons pill + fond blanc cassé',w:sv.te*(10-sv.br)},
+  {l:'Dégradé pastel en hero + polices rondes + ombres douces',w:sv.wa*sv.or},
+  {l:'Dark glassmorphism + purple + flous systématiques',w:sv.lu*sv.co},
+ ];
+ return all.sort((a,b)=>b.w-a.w).slice(0,3).map(x=>x.l);
+},
+
+// ─── COMPOSITION DU PROMPT ──────────────────────
+fill(tpl,d){return tpl.replace(/\{(\w+)\}/g,(_,k)=>d[k]||`[${k}]`)},
+
+compose(brief,sv,typo,palette,gesture,antiPat,seed){
+ const{name,desc,audience,emotion,avoid,keep,content,level,domain}=brief;
+ const p=(arr,tag)=>this.pick(arr,name+tag);
+ const L=[];
+ const dom={'tech':'SaaS','art':'Portfolio','luxe':'Luxe','editorial':'Éditorial','wellness':'Wellness','food':'Food','ecom':'E-commerce','edu':'Formation','finance':'Finance','agence':'Agence'};
+
+ L.push(p(this.T.open,'o'));L.push('');
+ L.push('──────────────────────────────');
+ L.push('CONTEXTE DU PRODUIT');
+ L.push('──────────────────────────────');
+ L.push(this.fill(p(this.T.product_intro,'pi'),{name:name||'[Nom]',desc:desc||'[Description]'}));
+ if(audience)L.push(this.fill(p(this.T.audience,'au'),{aud:audience}));
+ if(emotion)L.push(this.fill(p(this.T.emotion_intro,'em'),{emotion:emotion}));
+ L.push(`Domaine détecté : ${dom[domain]||domain}  ·  Profil — Contraste:${sv.co}/10  Éditorial:${sv.ed}/10  Luxe:${sv.lu}/10  Technique:${sv.te}/10  Minimalisme:${sv.mi}/10`);
+ L.push('');
+
+ L.push('──────────────────────────────');
+ L.push('DIAGNOSTIC VISUEL');
+ L.push('──────────────────────────────');
+ L.push(p(this.T.problem_intro,'pb'));
+ if(avoid)L.push(`Symptômes documentés : ${avoid}`);
+ L.push(p(this.T.avoid_pfx,'ap')+' ces 3 looks IA génériques :');
+ antiPat.forEach(a=>L.push(`   → ${a}`));
+ L.push('');
+
+ if(keep){
+  L.push('──────────────────────────────');
+  L.push('SANCTUAIRES');
+  L.push('──────────────────────────────');
+  L.push(p(this.T.keep_pfx,'kp')+' '+keep);
+  L.push(`Niveau de refonte : ${level||'Total'}`);
+  L.push('');
+ }
+
+ L.push('──────────────────────────────');
+ L.push('DIRECTION TYPOGRAPHIQUE');
+ L.push('──────────────────────────────');
+ L.push(p(this.T.typo_intro,'ti'));
+ L.push(`   → Display / Titres : ${typo.d}${typo.m?'':', poids 600–700 min, letter-spacing -0.02em'}`);
+ L.push(`   → Body copy : ${typo.b}, poids 400–500, line-height 1.6`);
+ if(typo.m)L.push(`   → Mono / UI : ${typo.m}, 11–12px pour métadonnées et labels`);
+ L.push(`   → Logique : ${typo.why}`);
+ L.push('');
+
+ L.push('──────────────────────────────');
+ L.push('SYSTÈME CHROMATIQUE');
+ L.push('──────────────────────────────');
+ L.push(p(this.T.color_intro,'ci'));
+ palette.forEach(c=>L.push(`   → ${c.hex}   ${c.role} ${c.note}`));
+ L.push(`   → Règle d'or : aucune couleur sans justification. ${antiPat[0].split('+')[0].trim()} est formellement exclu.`);
+ L.push('');
+
+ L.push('──────────────────────────────');
+ L.push('GESTE SIGNATURE');
+ L.push('──────────────────────────────');
+ L.push(p(this.T.gesture_intro,'gi'));
+ L.push(`   → ${gesture.g}`);
+ L.push('');
+
+ if(content){
+  L.push('──────────────────────────────');
+  L.push('COPIE TEXTUELLE RÉELLE');
+  L.push('──────────────────────────────');
+  L.push('Utilise ces textes exacts — ne les remplace jamais par des placeholders :');
+  L.push(content);
+  L.push('');
+ }
+
+ L.push('──────────────────────────────');
+ L.push(p(this.T.instr_pfx,'ip'));
+ L.push('──────────────────────────────');
+ L.push('1. Avant de coder, propose un plan : palette confirmée + typo + geste. Attends ma validation.');
+ L.push('2. Auto-critique obligatoire : si ton plan ressemble à l\'un des 3 looks IA listés, recommence et explique ce que tu as changé.');
+ L.push('3. Après validation, applique systématiquement à l\'ensemble du code.');
+ if(sv.te>7)L.push('4. Soigne la densité de l\'information et les micro-interactions — chaque pixel doit être justifié.');
+ if(sv.lu>7)L.push('4. Chaque espace blanc est intentionnel — la respiration est une décision de design, pas une absence.');
+ if(sv.br>7)L.push('4. Assume le brutalisme — la franchise visuelle est la direction, pas un défaut à corriger.');
+ if(sv.mi>8)L.push('4. Maximalise le silence visuel — chaque élément qui peut être retiré doit l\'être.');
+
+ return L.join('\n');
+},
+
+// ─── ENTRÉE PRINCIPALE ──────────────────────────
+generate(brief,theme){
+ const seed=brief.name+brief.desc;
+ const domain=this.detectDomain([brief.name,brief.desc,brief.audience].join(' '));
+ const vectors=(brief.emotion||'').split(',').map(s=>s.trim()).filter(Boolean);
+ const sv=this.buildScoreVec(vectors,domain);
+ const typo=this.selectTypo(sv,seed);
+ const palette=this.buildPalette(theme,sv,seed);
+ const gesture=this.selectGesture(sv,domain,seed);
+ const antiPat=this.selectAntiPatterns(sv);
+ return this.compose({...brief,domain},sv,typo,palette,gesture,antiPat,seed);
+},
+
+// ─── AFFINAGE ───────────────────────────────────
+refine(currentPrompt,request,brief,theme){
+ const domain=this.detectDomain([brief.name,brief.desc].join(' '));
+ const vectors=(brief.emotion||'').split(',').map(s=>s.trim()).filter(Boolean);
+ let sv=this.buildScoreVec(vectors,domain);
+ const req=request.toLowerCase();
+ for(const[kw,adj] of Object.entries(this.MODS)){
+  if(req.includes(kw))for(const[k,v] of Object.entries(adj))sv[k]=Math.max(0,Math.min(10,(sv[k]||5)+v));
+ }
+ const seed=brief.name+brief.desc+'r'+request.slice(0,12);
+ const typo=this.selectTypo(sv,seed);
+ const palette=this.buildPalette(theme,sv,seed);
+ const gesture=this.selectGesture(sv,domain,seed);
+ const antiPat=this.selectAntiPatterns(sv);
+ let refined=this.compose({...brief,domain},sv,typo,palette,gesture,antiPat,seed);
+
+ // Injections structurelles
+ if(req.includes('animat')||req.includes('mouvement')){
+  refined+='\n\nANIMATIONS\n──────────────────────────────\n';
+  refined+='   → Transitions de page : opacity + translateY(8px), 220ms ease\n';
+  refined+='   → Hover interactifs : transform + transition 150ms cubic-bezier(.16,1,.3,1)\n';
+  refined+='   → Chargement initial : stagger 60ms entre éléments du hero\n';
+ }
+ if(req.includes('micro')||req.includes('interact')){
+  refined+='\n\nMICRO-INTERACTIONS\n──────────────────────────────\n';
+  refined+='   → Feedback immédiat sur chaque action (< 100ms)\n';
+  refined+='   → Tous les states définis : default / hover / active / focus / disabled\n';
+  refined+='   → Animations de validation sur les formulaires\n';
+ }
+ if(req.includes('mobile')||req.includes('responsive')){
+  refined+='\n\nADAPTATION MOBILE\n──────────────────────────────\n';
+  refined+='   → Breakpoints : 375px (mobile), 768px (tablet), 1280px (desktop)\n';
+  refined+='   → Touch targets minimum 44x44px\n';
+  refined+='   → Typographie fluide : clamp() pour tous les titres\n';
+ }
+ return refined;
+},
+
+// ─── LIGNE D'INSIGHT (moodboard) ────────────────
+insightLine(name,desc,vectors){
+ if(!name&&!desc)return'';
+ const domain=this.detectDomain(name+' '+desc);
+ const sv=this.buildScoreVec(vectors,domain);
+ const typo=this.selectTypo(sv,name+desc);
+ const labels={tech:'SaaS',art:'Portfolio',luxe:'Luxe',editorial:'Éditorial',wellness:'Wellness',food:'Food',ecom:'E-commerce',edu:'Formation',finance:'Finance',agence:'Agence'};
+ return`[${labels[domain]||domain}] ${typo.d} × ${typo.b} — ${typo.why.split(' — ')[0]}`;
+},
+
+// ─── SUGGESTIONS CHIPS ──────────────────────────
+suggestVectors(name,desc){
+ const domain=this.detectDomain(name+' '+desc);
+ const map={
+  'Organique': {tech:-1,art:1,luxe:0,wellness:2,food:2,agence:1,ecom:0,edu:0,finance:-1,editorial:0},
+  'Brutaliste':{tech:1,art:2,luxe:-2,wellness:-2,food:-1,agence:2,ecom:0,edu:-1,finance:-1,editorial:1},
+  'Éditorial': {tech:0,art:2,luxe:2,wellness:0,food:1,agence:2,ecom:1,edu:1,finance:1,editorial:3},
+  'Silencieux':{tech:1,art:1,luxe:3,wellness:2,food:0,agence:1,ecom:1,edu:0,finance:2,editorial:1},
+  'Technique': {tech:3,art:0,luxe:0,wellness:-1,food:-1,agence:1,ecom:1,edu:2,finance:2,editorial:0},
+ };
+ return Object.entries(map)
+  .map(([v,s])=>({v,s:s[domain]||0}))
+  .sort((a,b)=>b.s-a.s)
+  .slice(0,2).filter(x=>x.s>0).map(x=>x.v);
+},
+
+}; // ── END Algo ────────────────────────────────────
 
 // ─── UI ────────────────────────────────────────────
 const UI={
