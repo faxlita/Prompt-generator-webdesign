@@ -44,9 +44,56 @@ body{font-family:var(--font-sans);background-color:var(--bg-base);color:var(--te
 /* PANELS */
 .panel{position:absolute;left:80px;top:0;width:340px;height:100%;background:var(--surface-solid);border-right:1px solid var(--border);z-index:50;padding:3rem 2rem;transform:translateX(-100%);opacity:0;pointer-events:none;transition:var(--trans);box-shadow:20px 0 40px rgba(0,0,0,0.03);overflow-y:auto}
 .panel.open{transform:translateX(0);opacity:1;pointer-events:auto}
-#panel-palette{width:440px;padding:2.5rem 2rem}
-#panel-palette::-webkit-scrollbar{width:4px}
-#panel-palette::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:10px}
+#panel-palette{width:min(960px,96vw);padding:0;display:flex;flex-direction:row;overflow:hidden}
+.pp-controls{width:420px;flex-shrink:0;padding:2.5rem 2rem;overflow-y:auto;border-right:1px solid var(--border);height:100%}
+.pp-controls::-webkit-scrollbar{width:4px}
+.pp-controls::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:10px}
+.pp-preview{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+/* Browser chrome */
+.lp-chrome{height:34px;background:#1C1C1E;display:flex;align-items:center;gap:8px;padding:0 14px;flex-shrink:0}
+.lp-cdots{display:flex;gap:5px}
+.lp-cdot{width:9px;height:9px;border-radius:50%}
+.lp-cdot.r{background:#FF5F57}.lp-cdot.y{background:#FEBC2E}.lp-cdot.g{background:#28C840}
+.lp-url{background:#2a2a2a;border-radius:4px;padding:3px 12px;font-size:10px;color:#777;font-family:monospace}
+.lp-chrome-lbl{margin-left:auto;font-size:9px;color:#444;font-family:monospace;text-transform:uppercase;letter-spacing:.1em}
+/* Site preview */
+.lp-site{flex:1;overflow-y:auto;background:var(--bg-base);transition:background .25s;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.1) transparent}
+/* Nav */
+.lp-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--surface-solid);border-bottom:1px solid var(--border);transition:background .25s,border-color .25s;position:sticky;top:0;z-index:5}
+.lp-brand{font-weight:700;font-size:13px;color:var(--text-main);transition:color .25s;display:flex;align-items:center;gap:5px}
+.lp-brand::before{content:'●';color:var(--c-2);font-size:9px;transition:color .25s}
+.lp-nav-r{display:flex;align-items:center;gap:12px}
+.lp-nav-lnk{font-size:11px;color:var(--text-muted);transition:color .25s}
+.lp-nav-cta{background:var(--text-main);color:var(--bg-base);font-size:10px;font-weight:600;padding:5px 12px;border-radius:20px;transition:background .25s,color .25s}
+/* Hero */
+.lp-hero{padding:36px 20px 28px;background:var(--bg-base);transition:background .25s}
+.lp-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;color:var(--c-2);border:1px solid var(--c-2);padding:3px 10px;border-radius:20px;margin-bottom:14px;transition:color .25s,border-color .25s}
+.lp-h1{font-family:var(--font-serif);font-size:24px;font-weight:600;line-height:1.2;color:var(--text-main);margin-bottom:10px;transition:color .25s}
+.lp-lead{font-size:11.5px;color:var(--text-muted);line-height:1.65;margin-bottom:20px;transition:color .25s}
+.lp-btns{display:flex;gap:8px;flex-wrap:wrap}
+.lp-btn-p{background:var(--c-2);color:#fff;font-size:11px;font-weight:600;padding:8px 16px;border-radius:20px;transition:background .25s}
+.lp-btn-g{border:1px solid var(--border);color:var(--text-muted);font-size:11px;padding:8px 16px;border-radius:20px;transition:border-color .25s,color .25s}
+/* Cards */
+.lp-cards-wrap{padding:20px;background:var(--surface-solid);border-top:1px solid var(--border);transition:background .25s,border-color .25s}
+.lp-cards-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:12px;transition:color .25s}
+.lp-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.lp-card{padding:14px;background:var(--bg-base);border:1px solid var(--border);border-radius:10px;transition:background .25s,border-color .25s}
+.lp-card-ico{font-size:14px;color:var(--c-2);margin-bottom:7px;transition:color .25s}
+.lp-card-t{font-size:11px;font-weight:700;color:var(--text-main);margin-bottom:4px;transition:color .25s}
+.lp-card-b{font-size:10px;color:var(--text-muted);line-height:1.5;transition:color .25s}
+/* Dark banner */
+.lp-dark{padding:26px 20px;background:var(--c-1);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;transition:background .25s}
+.lp-dark-t{font-family:var(--font-serif);font-size:16px;font-weight:500;color:var(--bg-base);line-height:1.3;transition:color .25s}
+.lp-dark-btn{background:var(--c-2);color:#fff;font-size:11px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;transition:background .25s}
+/* Form */
+.lp-form{padding:20px;background:var(--bg-base);border-top:1px solid var(--border);transition:background .25s,border-color .25s}
+.lp-form-t{font-size:12px;font-weight:700;color:var(--text-main);margin-bottom:12px;transition:color .25s}
+.lp-field{border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text-muted);background:var(--surface-solid);margin-bottom:7px;transition:background .25s,border-color .25s,color .25s}
+.lp-form-btn{background:var(--text-main);color:var(--bg-base);font-size:11px;font-weight:600;padding:8px 16px;border-radius:20px;display:inline-block;margin-top:6px;transition:background .25s,color .25s}
+/* Footer */
+.lp-foot{padding:10px 20px;background:var(--surface-solid);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;transition:background .25s,border-color .25s}
+.lp-foot-brand{font-size:11px;font-weight:700;color:var(--text-main);transition:color .25s}
+.lp-foot-tag{font-size:9px;color:var(--text-muted);font-family:monospace;letter-spacing:.03em;transition:color .25s}
 .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
 .panel-title{font-family:var(--font-serif);font-size:22px;color:var(--text-main)}
 .panel-subtitle{font-size:12px;color:var(--text-muted);margin-bottom:1.75rem;line-height:1.5}
@@ -300,56 +347,117 @@ svg.ic-sm{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;st
   </aside>
 
   <div id="panel-palette" class="panel">
-    <div class="panel-head"><h3 class="panel-title">Curated Palettes</h3><button class="close-btn" onclick="UI.closePanels()">&times;</button></div>
-    <p class="panel-subtitle">Sélectionne une ambiance visuelle. Elle s'intègre directement dans le prompt généré par Claude et oriente la direction chromatique.</p>
-    <div id="theme-list"></div>
 
-    <!-- ROUE CHROMATIQUE -->
-    <div class="cw-section">
-      <div class="cw-divider">composer</div>
-      <div class="cw-heading">Roue Chromatique</div>
-      <p class="cw-sub">Construis ta propre palette. Clique sur la roue pour choisir une teinte, ajuste la luminosité et la saturation.</p>
+    <!-- Colonne gauche : contrôles -->
+    <div class="pp-controls">
+      <div class="panel-head"><h3 class="panel-title">Curated Palettes</h3><button class="close-btn" onclick="UI.closePanels()">&times;</button></div>
+      <p class="panel-subtitle">Sélectionne une ambiance ou compose ta propre palette. Le site se met à jour en direct dans l'aperçu →</p>
+      <div id="theme-list"></div>
 
-      <div class="cw-layout">
-        <div class="cw-canvas-wrap">
-          <canvas id="cw-canvas" width="150" height="150"></canvas>
-          <div class="cw-cursor" id="cw-cursor"></div>
-        </div>
-        <div class="cw-right">
-          <div class="cw-preview-row">
-            <div class="cw-preview" id="cw-preview" style="background:#55A4CC"></div>
-            <div class="cw-hex-wrap">
-              <span class="cw-hex" id="cw-hex" title="Cliquer pour copier" onclick="navigator.clipboard.writeText(this.textContent)">#55A4CC</span>
-              <span class="cw-hex-sub">Clic = copier</span>
+      <!-- ROUE CHROMATIQUE -->
+      <div class="cw-section">
+        <div class="cw-divider">composer</div>
+        <div class="cw-heading">Roue Chromatique</div>
+        <p class="cw-sub">Clique sur la roue, ajuste les curseurs, ou entre les codes hex directement. Le site se met à jour en direct.</p>
+
+        <div class="cw-layout">
+          <div class="cw-canvas-wrap">
+            <canvas id="cw-canvas" width="150" height="150"></canvas>
+            <div class="cw-cursor" id="cw-cursor"></div>
+          </div>
+          <div class="cw-right">
+            <div class="cw-preview-row">
+              <div class="cw-preview" id="cw-preview" style="background:#55A4CC"></div>
+              <div class="cw-hex-wrap">
+                <span class="cw-hex" id="cw-hex" title="Cliquer pour copier" onclick="navigator.clipboard.writeText(this.textContent)">#55A4CC</span>
+                <span class="cw-hex-sub">Clic = copier</span>
+              </div>
+            </div>
+            <div class="cw-slider-group">
+              <label class="cw-slider-label">Luminosité <span class="cw-slider-val" id="cw-lval">50%</span></label>
+              <input type="range" class="cw-slider" id="cw-l" min="5" max="95" value="50"/>
+            </div>
+            <div class="cw-slider-group">
+              <label class="cw-slider-label">Saturation <span class="cw-slider-val" id="cw-sval">75%</span></label>
+              <input type="range" class="cw-slider" id="cw-s" min="0" max="100" value="75"/>
             </div>
           </div>
-          <div class="cw-slider-group">
-            <label class="cw-slider-label">Luminosité <span class="cw-slider-val" id="cw-lval">50%</span></label>
-            <input type="range" class="cw-slider" id="cw-l" min="5" max="95" value="50"/>
-          </div>
-          <div class="cw-slider-group">
-            <label class="cw-slider-label">Saturation <span class="cw-slider-val" id="cw-sval">75%</span></label>
-            <input type="range" class="cw-slider" id="cw-s" min="0" max="100" value="75"/>
+        </div>
+
+        <div class="hex-pal-head">
+          <span class="cw-palette-label" style="margin:0">6 couleurs du site</span>
+          <button class="hex-from-wheel" onclick="CW.addFromWheel()" title="Insérer la couleur courante dans le prochain slot vide">
+            <svg class="ic-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+            Depuis la roue
+          </button>
+        </div>
+        <div class="hex-rows" id="cw-palette"></div>
+        <div class="cw-btns">
+          <button class="cw-clear" onclick="CW.clear()">Tout effacer</button>
+        </div>
+        <button class="cw-apply" id="cw-apply" onclick="CW.apply()" disabled>
+          <svg class="ic-sm" viewBox="0 0 24 24" style="stroke:#fff"><polyline points="20 6 9 17 4 12"/></svg>
+          Appliquer au site
+        </button>
+      </div><!-- /cw-section -->
+    </div><!-- /pp-controls -->
+
+    <!-- Colonne droite : aperçu live -->
+    <div class="pp-preview">
+      <div class="lp-chrome">
+        <div class="lp-cdots">
+          <div class="lp-cdot r"></div>
+          <div class="lp-cdot y"></div>
+          <div class="lp-cdot g"></div>
+        </div>
+        <div class="lp-url">yourapp.com</div>
+        <span class="lp-chrome-lbl">Aperçu live</span>
+      </div>
+      <div class="lp-site">
+        <div class="lp-nav">
+          <div class="lp-brand">Brand</div>
+          <div class="lp-nav-r">
+            <span class="lp-nav-lnk">Produit</span>
+            <span class="lp-nav-lnk">Tarifs</span>
+            <span class="lp-nav-lnk">Blog</span>
+            <div class="lp-nav-cta">Essayer →</div>
           </div>
         </div>
+        <div class="lp-hero">
+          <div class="lp-badge">Nouveau · v2.0</div>
+          <h2 class="lp-h1">Ton identité visuelle,<br>enfin unique.</h2>
+          <p class="lp-lead">Génère un prompt design ancré dans l'univers de ton produit — pas dans le style par défaut de l'IA.</p>
+          <div class="lp-btns">
+            <div class="lp-btn-p">Commencer gratuitement</div>
+            <div class="lp-btn-g">Voir la démo</div>
+          </div>
+        </div>
+        <div class="lp-cards-wrap">
+          <div class="lp-cards-lbl">Fonctionnalités</div>
+          <div class="lp-cards">
+            <div class="lp-card"><div class="lp-card-ico">✦</div><div class="lp-card-t">Analyse</div><div class="lp-card-b">Brief analysé en profondeur par l'algorithme</div></div>
+            <div class="lp-card"><div class="lp-card-ico">◈</div><div class="lp-card-t">Typographie</div><div class="lp-card-b">30 paires sélectionnées par cosinus</div></div>
+            <div class="lp-card"><div class="lp-card-ico">◉</div><div class="lp-card-t">Palette</div><div class="lp-card-b">Hex générés et rôles assignés</div></div>
+          </div>
+        </div>
+        <div class="lp-dark">
+          <div class="lp-dark-t">Prêt à transformer<br>ton design ?</div>
+          <div class="lp-dark-btn">Générer maintenant</div>
+        </div>
+        <div class="lp-form">
+          <div class="lp-form-t">Brief rapide</div>
+          <div class="lp-field">Nom de ton projet…</div>
+          <div class="lp-field">Description en une phrase…</div>
+          <div class="lp-field">Vecteur émotionnel…</div>
+          <div class="lp-form-btn">Compiler l'artefact →</div>
+        </div>
+      </div><!-- /lp-site -->
+      <div class="lp-foot">
+        <span class="lp-foot-brand">Your Style</span>
+        <span class="lp-foot-tag">Aperçu live · se met à jour à chaque modification</span>
       </div>
+    </div><!-- /pp-preview -->
 
-      <div class="hex-pal-head">
-        <span class="cw-palette-label" style="margin:0">6 couleurs du site</span>
-        <button class="hex-from-wheel" onclick="CW.addFromWheel()" title="Insérer la couleur courante de la roue dans le prochain slot vide">
-          <svg class="ic-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-          Depuis la roue
-        </button>
-      </div>
-      <div class="hex-rows" id="cw-palette"></div>
-      <div class="cw-btns">
-        <button class="cw-clear" onclick="CW.clear()">Tout effacer</button>
-      </div>
-      <button class="cw-apply" id="cw-apply" onclick="CW.apply()" disabled>
-        <svg class="ic-sm" viewBox="0 0 24 24" style="stroke:#fff"><polyline points="20 6 9 17 4 12"/></svg>
-        Appliquer au site
-      </button>
-      </div><!-- /cw-section -->
   </div><!-- /panel-palette -->
 
   <div id="panel-settings" class="panel">
